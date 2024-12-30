@@ -4,27 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreamer Document AI Agent v0</title>
+    <!-- Add ARIA labels and roles for accessibility -->
+    <meta name="description" content="AI-powered document analysis tool for PDF and Word documents">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg" role="navigation" aria-label="Main navigation">
         <div class="container">
-            <a class="navbar-brand" href="/" data-tooltip="Document Analysis AI">
-                <i data-feather="file-text"></i>
-                Dreamer Document AI
+            <a class="navbar-brand" href="/" data-tooltip="Document Analysis AI" aria-label="Home">
+                <i data-feather="file-text" aria-hidden="true"></i>
+                <span>Dreamer Document AI</span>
             </a>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <main class="container mt-4" role="main">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
-    <button class="theme-toggle" id="themeToggle" data-tooltip="Toggle dark mode">
-        <i data-feather="moon" id="themeIcon"></i>
+    <button class="theme-toggle" id="themeToggle" data-tooltip="Toggle dark mode" aria-label="Toggle dark mode">
+        <i data-feather="moon" id="themeIcon" aria-hidden="true"></i>
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

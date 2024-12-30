@@ -133,8 +133,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('payment-form');
         form.addEventListener('submit', handlePaymentSubmission);
 
-        // Show payment form
+        // Show payment form and trigger confetti
         paymentContainer.classList.remove('d-none');
+
+        // Trigger confetti animation
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#0d6efd', '#198754', '#ffc107']
+        });
     }
 
     async function handlePaymentSubmission(event) {
@@ -180,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError(error.message || 'Payment failed');
             submitButton.disabled = false;
-            submitButton.textContent = 'Pay $5.00';
+            submitButton.textContent = 'Pay $0.15';
         }
     }
 

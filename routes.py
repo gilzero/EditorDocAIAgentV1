@@ -10,7 +10,7 @@ from utils.stripe_utils import create_payment_intent, confirm_payment_intent, ST
 
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 UPLOAD_FOLDER = '/tmp'
-ANALYSIS_COST = 500  # $5.00 in cents
+ANALYSIS_COST = 15  # $0.15 in cents
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

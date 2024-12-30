@@ -6,19 +6,21 @@
         <div class="col-md-12 text-center mb-4">
             <h1>Document Analysis</h1>
             <p class="lead">Upload PDF or Word documents for AI-powered analysis</p>
-            <small class="text-muted">Analysis cost: $5.00 per document</small>
+            <small class="text-muted">Analysis cost: $0.15 per document</small>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
-            <div class="upload-container" id="dropZone" data-tooltip="Drag & drop your document here">
+            <div class="upload-container" id="dropZone" data-tooltip="Drag & drop your document here" 
+                 role="region" aria-label="File upload area">
                 <div class="upload-content">
-                    <i data-feather="upload-cloud" class="upload-icon"></i>
+                    <i data-feather="upload-cloud" class="upload-icon" aria-hidden="true"></i>
                     <h5 class="mb-2">Drag and drop your document here</h5>
                     <p class="mb-1">or click to browse your files</p>
                     <small class="text-muted">Supported formats: PDF, DOCX (Max 20MB)</small>
-                    <input type="file" id="fileInput" accept=".pdf,.docx" class="d-none">
+                    <input type="file" id="fileInput" accept=".pdf,.docx" class="d-none" 
+                           aria-label="Choose a file to upload">
                 </div>
             </div>
         </div>
@@ -26,7 +28,7 @@
 
     <div class="row mt-4">
         <div class="col-md-12">
-            <div id="progressContainer" class="d-none">
+            <div id="progressContainer" class="d-none" role="progressbar" aria-label="Processing document">
                 <div class="processing-animation">
                     <div></div>
                     <div></div>
@@ -34,44 +36,45 @@
                     <div></div>
                 </div>
                 <div class="text-center">
-                    <p class="text-muted mb-0">Processing your document<span class="loading-dots"></span></p>
+                    <p class="text-muted mb-0" aria-live="polite">Processing your document<span class="loading-dots"></span></p>
                 </div>
             </div>
 
-            <div id="paymentContainer" class="d-none">
+            <div id="paymentContainer" class="d-none" role="form" aria-label="Payment form">
                 <div class="analysis-card">
                     <div class="analysis-section">
                         <h5 class="mb-3">Payment Details</h5>
                         <p class="mb-3">Complete the payment to receive your document analysis</p>
                         <form id="payment-form">
                             <div class="mb-3">
-                                <div id="card-element" class="form-control"></div>
-                                <div id="card-errors" class="text-danger mt-2"></div>
+                                <div id="card-element" class="form-control" role="group" aria-label="Credit card input"></div>
+                                <div id="card-errors" class="text-danger mt-2" role="alert" aria-live="polite"></div>
                             </div>
-                            <button class="btn btn-primary w-100" id="submit-payment">
-                                Pay $5.00
+                            <button class="btn btn-primary w-100" id="submit-payment" aria-label="Pay $0.15">
+                                Pay $0.15
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <div id="resultContainer" class="d-none">
+            <div id="resultContainer" class="d-none" role="region" aria-label="Analysis results">
                 <div class="analysis-card">
                     <div class="analysis-section">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Analysis Results</h5>
-                            <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
-                                <i data-feather="download"></i> Export JSON
+                            <button class="btn btn-outline-primary btn-sm export-button" data-format="json" 
+                                    aria-label="Export results as JSON">
+                                <i data-feather="download" aria-hidden="true"></i> Export JSON
                             </button>
                         </div>
                     </div>
                     <div class="analysis-section">
                         <div class="analysis-title">
-                            <i data-feather="file-text"></i>
+                            <i data-feather="file-text" aria-hidden="true"></i>
                             Summary
                         </div>
-                        <div id="analysisContent" class="analysis-content"></div>
+                        <div id="analysisContent" class="analysis-content" aria-live="polite"></div>
                     </div>
                 </div>
             </div>
