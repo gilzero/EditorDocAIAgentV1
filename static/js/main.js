@@ -10,19 +10,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Feather icons
     feather.replace();
 
-    // Drag and drop handlers
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('dragover');
+    // Drag and drop handlers with improved feedback
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
     });
 
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('dragover');
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
     });
 
     dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
         const files = e.dataTransfer.files;
         if (files.length) handleFile(files[0]);
     });
@@ -35,14 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.files.length) handleFile(e.target.files[0]);
     });
 
-    // Export button handlers
-    document.querySelectorAll('.export-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const format = button.dataset.format;
-            if (currentAnalysis) {
-                exportAnalysis(currentAnalysis, format);
-            }
-        });
+    // Export button handler
+    document.querySelector('.export-button').addEventListener('click', () => {
+        if (currentAnalysis) {
+            exportAnalysis(currentAnalysis);
+        }
     });
 
     function handleFile(file) {
@@ -119,32 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
         resultContainer.classList.remove('d-none');
     }
 
-    function exportAnalysis(data, format) {
-        const fileName = `document-analysis.${format}`;
-        let content;
-
-        switch (format) {
-            case 'json':
-                content = JSON.stringify(data, null, 2);
-                downloadFile(content, fileName, 'application/json');
-                break;
-            case 'csv':
-                content = `Summary\n${data.analysis.summary}`;
-                downloadFile(content, fileName, 'text/csv');
-                break;
-            case 'pdf':
-                // For PDF, we'll redirect to a server endpoint that generates the PDF
-                window.open(`/export/pdf?id=${data.id}`, '_blank');
-                break;
-        }
-    }
-
-    function downloadFile(content, fileName, mimeType) {
-        const blob = new Blob([content], { type: mimeType });
+    function exportAnalysis(data) {
+        const content = JSON.stringify(data, null, 2);
+        const blob = new Blob([content], { type: 'application/json' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = fileName;
+        link.download = 'document-analysis.json';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

@@ -14,7 +14,8 @@
             <div class="upload-container" id="dropZone">
                 <div class="upload-content">
                     <i data-feather="upload-cloud" class="upload-icon"></i>
-                    <p>Drag and drop your document here or click to browse</p>
+                    <h5 class="mb-2">Drag and drop your document here</h5>
+                    <p class="mb-1">or click to browse your files</p>
                     <small class="text-muted">Supported formats: PDF, DOCX (Max 20MB)</small>
                     <input type="file" id="fileInput" accept=".pdf,.docx" class="d-none">
                 </div>
@@ -40,17 +41,9 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">Analysis Results</h5>
-                        <div class="export-buttons">
-                            <button class="btn btn-outline-primary btn-sm export-button" data-format="pdf">
-                                <i data-feather="file-text"></i> PDF
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
-                                <i data-feather="code"></i> JSON
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm export-button" data-format="csv">
-                                <i data-feather="file"></i> CSV
-                            </button>
-                        </div>
+                        <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
+                            <i data-feather="download"></i> Export JSON
+                        </button>
                     </div>
                     <div class="card-body">
                         <div id="analysisContent"></div>
