@@ -1,3 +1,29 @@
+// Define toggleSection in the global scope
+window.toggleSection = function(sectionId) {
+    const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
+    const content = document.getElementById(`section-${sectionId}`);
+    if (!header || !content) return;
+
+    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+    // Toggle aria-expanded
+    header.setAttribute('aria-expanded', !isExpanded);
+
+    // Toggle content visibility
+    content.classList.toggle('active');
+
+    // Update chevron icon
+    const chevron = header.querySelector('.chevron-icon');
+    if (chevron) {
+        chevron.style.transform = !isExpanded ? 'rotate(180deg)' : 'none';
+    }
+
+    // Announce to screen readers
+    if (!isExpanded) {
+        content.focus();
+    }
+};
+
 function updateLoadingState(step, progress) {
     const steps = ['uploadStep', 'processStep', 'analyzeStep'];
     const progressBar = document.querySelector('.loading-progress-bar');
@@ -30,26 +56,6 @@ function updateLoadingState(step, progress) {
     // Update Feather icons only if feather is loaded
     if (typeof feather !== 'undefined') {
         feather.replace();
-    }
-}
-
-// Global function for toggling sections
-window.toggleSection = function(sectionId) {
-    const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
-    const content = document.getElementById(`section-${sectionId}`);
-    if (!header || !content) return;
-
-    const isExpanded = header.getAttribute('aria-expanded') === 'true';
-
-    // Toggle aria-expanded
-    header.setAttribute('aria-expanded', !isExpanded);
-
-    // Toggle content visibility
-    content.classList.toggle('active');
-
-    // Announce to screen readers
-    if (!isExpanded) {
-        content.focus();
     }
 }
 
