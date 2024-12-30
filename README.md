@@ -1,1 +1,2 @@
-git clone https://github.com/yourusername/dreamer-document-ai.git
+git clone https://github.com/gilzero/DreamerDocumentAI.git
+cd DreamerDocumentAI
