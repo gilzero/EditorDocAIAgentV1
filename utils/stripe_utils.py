@@ -12,6 +12,7 @@ def create_payment_intent(amount, payment_methods=['card'], currency='cny'):
             amount=amount,
             currency=currency,
             payment_method_types=payment_methods,
+            payment_method_configuration=os.environ.get('STRIPE_PAYMENT_METHOD_CONFIG', 'pmc_1QbcRB00zr9oQIWafBW2LMWF'),
             metadata={'service': 'document_analysis'}
         )
         return intent

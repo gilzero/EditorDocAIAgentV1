@@ -71,10 +71,10 @@ def upload_file():
             db.session.add(document)
             db.session.commit()
 
-            # Create payment intent with Alipay support and CNY currency
+            # Create payment intent with all supported payment methods
             payment_intent = create_payment_intent(
                 ANALYSIS_COST,
-                payment_methods=['card', 'alipay'],
+                payment_methods=['card', 'alipay', 'wechat_pay', 'apple_pay'],
                 currency='cny'
             )
 
