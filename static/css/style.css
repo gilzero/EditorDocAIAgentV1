@@ -349,3 +349,60 @@ body {
         padding: 1rem;
     }
 }
+
+/* Payment Form Styles */
+#card-element {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+}
+
+#card-element.StripeElement--focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+#card-element.StripeElement--invalid {
+    border-color: #ef4444;
+}
+
+#card-errors {
+    font-size: 0.875rem;
+    color: #ef4444;
+    margin-top: 0.5rem;
+}
+
+#submit-payment {
+    position: relative;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#submit-payment:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#submit-payment:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Dark mode adjustments for payment form */
+[data-theme="dark"] #card-element {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] #submit-payment {
+    background-color: var(--primary-color);
+}

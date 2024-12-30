@@ -1,14 +1,16 @@
 import os
 import logging
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from app import app, db
-from models import Document
+from models import Document, Payment
 from utils.document_processor import process_document
 from utils.ai_analyzer import analyze_document
+from utils.stripe_utils import create_payment_intent, confirm_payment_intent, STRIPE_PUBLISHABLE_KEY
 
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 UPLOAD_FOLDER = '/tmp'
+ANALYSIS_COST = 500  # $5.00 in cents
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -57,23 +59,19 @@ def upload_file():
             doc_metadata = process_document(temp_path)
             app.logger.info("Document processed successfully")
 
-            # Analyze document
-            app.logger.info("Starting document analysis")
-            analysis_result = analyze_document(doc_metadata['text_content'])
-            app.logger.info("Document analyzed successfully")
-
-            # Save to database
+            # Save document to database
             document = Document(
                 filename=filename,
                 original_filename=file.filename,
                 file_size=os.path.getsize(temp_path),
                 mime_type=file.content_type,
-                doc_metadata=doc_metadata,
-                analysis_summary=analysis_result['summary']
+                doc_metadata=doc_metadata
             )
             db.session.add(document)
             db.session.commit()
-            app.logger.info("Document saved to database")
+
+            # Create payment intent
+            payment_intent = create_payment_intent(ANALYSIS_COST)
 
             # Clean up temp file
             try:
@@ -83,8 +81,10 @@ def upload_file():
                 app.logger.warning(f"Failed to remove temporary file: {str(e)}")
 
             return jsonify({
-                'success': True,
-                'analysis': analysis_result
+                'document_id': document.id,
+                'client_secret': payment_intent.client_secret,
+                'publishable_key': STRIPE_PUBLISHABLE_KEY,
+                'amount': ANALYSIS_COST
             })
 
         except Exception as e:
@@ -99,3 +99,49 @@ def upload_file():
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/payment/success', methods=['POST'])
+def payment_success():
+    try:
+        data = request.get_json()
+        payment_intent_id = data.get('payment_intent_id')
+        document_id = data.get('document_id')
+
+        if not payment_intent_id or not document_id:
+            return jsonify({'error': 'Missing required parameters'}), 400
+
+        # Verify payment intent
+        payment_intent = confirm_payment_intent(payment_intent_id)
+
+        if payment_intent.status != 'succeeded':
+            return jsonify({'error': 'Payment not successful'}), 400
+
+        # Get document
+        document = Document.query.get(document_id)
+        if not document:
+            return jsonify({'error': 'Document not found'}), 404
+
+        # Create payment record
+        payment = Payment(
+            stripe_payment_id=payment_intent_id,
+            amount=payment_intent.amount,
+            currency=payment_intent.currency,
+            status=payment_intent.status,
+            document_id=document_id
+        )
+        db.session.add(payment)
+
+        # Process the document with AI
+        analysis_result = analyze_document(document.doc_metadata['text_content'])
+        document.analysis_summary = analysis_result['summary']
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'analysis': analysis_result
+        })
+
+    except Exception as e:
+        app.logger.error(f"Payment processing error: {str(e)}")
+        return jsonify({'error': str(e)}), 500

@@ -3,10 +3,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const progressContainer = document.getElementById('progressContainer');
+    const paymentContainer = document.getElementById('paymentContainer');
     const resultContainer = document.getElementById('resultContainer');
     const analysisContent = document.getElementById('analysisContent');
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
+    let stripe;
+    let elements;
+    let currentDocumentId;
+    let clientSecret;
     let currentAnalysis = null;
 
     // Theme handling
@@ -86,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show progress animation
         progressContainer.classList.remove('d-none');
+        paymentContainer.classList.add('d-none');
         resultContainer.classList.add('d-none');
 
         fetch('/upload', {
@@ -102,13 +108,80 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             progressContainer.classList.add('d-none');
-            showResults(data);
-            showToast('Document processed successfully', 'success');
+            setupStripePayment(data);
+            showToast('Document uploaded successfully', 'success');
         })
         .catch(error => {
             showError(error.message || 'Error processing document');
             progressContainer.classList.add('d-none');
         });
+    }
+
+    function setupStripePayment(data) {
+        currentDocumentId = data.document_id;
+        clientSecret = data.client_secret;
+
+        // Initialize Stripe
+        stripe = Stripe(data.publishable_key);
+        elements = stripe.elements();
+
+        // Create card element
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', handlePaymentSubmission);
+
+        // Show payment form
+        paymentContainer.classList.remove('d-none');
+    }
+
+    async function handlePaymentSubmission(event) {
+        event.preventDefault();
+
+        const submitButton = document.getElementById('submit-payment');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+
+        try {
+            const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: elements.getElement('card'),
+                }
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Payment successful, get analysis results
+            const response = await fetch('/payment/success', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    payment_intent_id: paymentIntent.id,
+                    document_id: currentDocumentId
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Error processing payment');
+            }
+
+            paymentContainer.classList.add('d-none');
+            showResults(result);
+            showToast('Payment successful', 'success');
+
+        } catch (error) {
+            showError(error.message || 'Payment failed');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Pay $5.00';
+        }
     }
 
     function showResults(data) {
@@ -156,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Export functionality
-    document.querySelector('.export-button').addEventListener('click', () => {
+    document.querySelector('.export-button')?.addEventListener('click', () => {
         if (currentAnalysis) {
             const content = JSON.stringify(currentAnalysis, null, 2);
             const blob = new Blob([content], { type: 'application/json' });
