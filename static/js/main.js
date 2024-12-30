@@ -1,5 +1,5 @@
 // Global function for toggling sections
-function toggleSection(sectionId) {
+window.toggleSection = function(sectionId) {
     const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
     const content = document.getElementById(`section-${sectionId}`);
     if (!header || !content) return;
@@ -242,19 +242,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Define the sections to extract from the analysis
         const sections = [
-            { id: 'summary', title: '摘要', icon: 'file-text', regex: /摘要[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'characters', title: '人物分析', icon: 'users', regex: /人物分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'plot', title: '情节分析', icon: 'book-open', regex: /情节分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'themes', title: '主题分析', icon: 'feather', regex: /主题分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'readability', title: '可读性评估', icon: 'check-circle', regex: /可读性评估[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'sentiment', title: '情感分析', icon: 'heart', regex: /情感分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
-            { id: 'style', title: '风格和一致性', icon: 'edit-3', regex: /风格和一致性[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$)|$)/ }
+            { id: 'summary', title: '摘要', icon: 'file-text', regex: /摘要[\s\S]*?(?=人物分析|$)/},
+            { id: 'characters', title: '人物分析', icon: 'users', regex: /人物分析[\s\S]*?(?=情节分析|$)/},
+            { id: 'plot', title: '情节分析', icon: 'book-open', regex: /情节分析[\s\S]*?(?=主题分析|$)/},
+            { id: 'themes', title: '主题分析', icon: 'feather', regex: /主题分析[\s\S]*?(?=可读性评估|$)/},
+            { id: 'readability', title: '可读性评估', icon: 'check-circle', regex: /可读性评估[\s\S]*?(?=情感分析|$)/},
+            { id: 'sentiment', title: '情感分析', icon: 'heart', regex: /情感分析[\s\S]*?(?=风格和一致性|$)/},
+            { id: 'style', title: '风格和一致性', icon: 'edit-3', regex: /风格和一致性[\s\S]*?(?=$)/}
         ];
 
         // Extract content for each section using improved regex
         sections.forEach((section, index) => {
             const match = analysisContent.match(section.regex);
-            const content = match ? match[1].trim() : '暂无内容';
+            let content = match ? match[0] : '暂无内容';
+
+            // Remove the section title from the content
+            content = content.replace(new RegExp(`^${section.title}`), '').trim();
+            // Remove any heading markers
+            content = content.replace(/^[#\s]*/, '');
 
             // Create section HTML
             const sectionHtml = `
@@ -287,10 +292,17 @@ document.addEventListener('DOMContentLoaded', function() {
         resultContainer.classList.remove('d-none');
 
         // Automatically expand the first section
-        toggleSection('summary');
+        setTimeout(() => toggleSection('summary'), 100);
     }
 
     function formatContent(content) {
+        if (!content || content === '暂无内容') {
+            return content;
+        }
+
+        // Remove common markdown headers and extra spaces
+        content = content.replace(/^#+\s*|^\s+/gm, '');
+
         // Convert markdown-style lists to HTML
         content = content.replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>');
         if (content.includes('<li>')) {
@@ -300,10 +312,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Convert bold text
         content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-        // Convert paragraphs
-        content = content.split('\n\n').map(p => `<p>${p.trim()}</p>`).join('');
+        // Convert paragraphs (only create paragraphs for actual multi-line breaks)
+        content = content
+            .split(/\n{2,}/)
+            .map(p => p.trim())
+            .filter(p => p)
+            .map(p => `<p>${p}</p>`)
+            .join('');
 
-        return content;
+        return content || '暂无内容';
     }
 
     // Add keyboard support for section headers
