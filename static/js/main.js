@@ -2,17 +2,23 @@ function updateLoadingState(step, progress) {
     const steps = ['uploadStep', 'processStep', 'analyzeStep'];
     const progressBar = document.querySelector('.loading-progress-bar');
 
-    // Update progress bar
-    progressBar.style.width = `${progress}%`;
+    if (progressBar) {
+        // Update progress bar
+        progressBar.style.width = `${progress}%`;
+    }
 
     // Update steps
     steps.forEach((stepId, index) => {
         const stepElement = document.getElementById(stepId);
+        if (!stepElement) return;
+
         if (index < steps.indexOf(step)) {
             stepElement.classList.remove('active');
             stepElement.classList.add('completed');
-            const icon = stepElement.querySelector('i');
-            icon.setAttribute('data-feather', 'check-circle');
+            const icon = stepElement.querySelector('i[data-feather]');
+            if (icon) {
+                icon.setAttribute('data-feather', 'check-circle');
+            }
         } else if (stepId === step) {
             stepElement.classList.add('active');
             stepElement.classList.remove('completed');
@@ -21,8 +27,10 @@ function updateLoadingState(step, progress) {
         }
     });
 
-    // Update Feather icons
-    feather.replace();
+    // Update Feather icons only if feather is loaded
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
 }
 
 // Global function for toggling sections
