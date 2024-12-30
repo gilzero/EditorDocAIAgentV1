@@ -1,2 +1,1 @@
-git clone [repository-url]
-cd dreamer-document-ai
+git clone https://github.com/yourusername/dreamer-document-ai.git
