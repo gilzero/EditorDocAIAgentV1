@@ -1,3 +1,30 @@
+function updateLoadingState(step, progress) {
+    const steps = ['uploadStep', 'processStep', 'analyzeStep'];
+    const progressBar = document.querySelector('.loading-progress-bar');
+
+    // Update progress bar
+    progressBar.style.width = `${progress}%`;
+
+    // Update steps
+    steps.forEach((stepId, index) => {
+        const stepElement = document.getElementById(stepId);
+        if (index < steps.indexOf(step)) {
+            stepElement.classList.remove('active');
+            stepElement.classList.add('completed');
+            const icon = stepElement.querySelector('i');
+            icon.setAttribute('data-feather', 'check-circle');
+        } else if (stepId === step) {
+            stepElement.classList.add('active');
+            stepElement.classList.remove('completed');
+        } else {
+            stepElement.classList.remove('active', 'completed');
+        }
+    });
+
+    // Update Feather icons
+    feather.replace();
+}
+
 // Global function for toggling sections
 window.toggleSection = function(sectionId) {
     const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
@@ -111,6 +138,20 @@ document.addEventListener('DOMContentLoaded', function() {
         paymentContainer.classList.add('d-none');
         resultContainer.classList.add('d-none');
 
+        // Show upload step
+        updateLoadingState('uploadStep', 0);
+
+        // Simulate upload progress
+        let progress = 0;
+        const uploadInterval = setInterval(() => {
+            progress += 5;
+            if (progress <= 30) {
+                updateLoadingState('uploadStep', progress);
+            } else {
+                clearInterval(uploadInterval);
+            }
+        }, 100);
+
         fetch('/upload', {
             method: 'POST',
             body: formData
@@ -121,14 +162,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(data.error || 'Error processing document');
                 });
             }
+            clearInterval(uploadInterval);
+            updateLoadingState('processStep', 60);
             return response.json();
         })
         .then(data => {
-            progressContainer.classList.add('d-none');
-            setupStripePayment(data);
-            showToast('Document uploaded successfully', 'success');
+            // Show processing step
+            setTimeout(() => {
+                updateLoadingState('analyzeStep', 90);
+                setTimeout(() => {
+                    progressContainer.classList.add('d-none');
+                    setupStripePayment(data);
+                    showToast('Document uploaded successfully', 'success');
+                }, 1000);
+            }, 1000);
         })
         .catch(error => {
+            clearInterval(uploadInterval);
             showError(error.message || 'Error processing document');
             progressContainer.classList.add('d-none');
         });

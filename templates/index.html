@@ -75,15 +75,35 @@
 
     <div class="row mt-4">
         <div class="col-md-12">
-            <div id="progressContainer" class="d-none" role="progressbar" aria-label="Processing document">
-                <div class="processing-animation">
+            <div id="progressContainer" class="d-none loading-container" role="progressbar" aria-label="Processing document">
+                <div class="loading-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
-                <div class="text-center">
-                    <p class="text-muted mb-0" aria-live="polite">Processing your document<span class="loading-dots"></span></p>
+                <div class="loading-text">Processing your document</div>
+                <ul class="loading-steps">
+                    <li class="loading-step" id="uploadStep">
+                        <i data-feather="upload" aria-hidden="true"></i>
+                        <span>Uploading document</span>
+                    </li>
+                    <li class="loading-step" id="processStep">
+                        <i data-feather="cpu" aria-hidden="true"></i>
+                        <span>Processing content</span>
+                    </li>
+                    <li class="loading-step" id="analyzeStep">
+                        <i data-feather="search" aria-hidden="true"></i>
+                        <span>Analyzing document</span>
+                    </li>
+                </ul>
+                <div class="loading-progress">
+                    <div class="loading-progress-bar" style="width: 0%"></div>
                 </div>
             </div>
 
