@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="upload-container" id="dropZone">
+            <div class="upload-container" id="dropZone" data-tooltip="Drag & drop your document here">
                 <div class="upload-content">
                     <i data-feather="upload-cloud" class="upload-icon"></i>
                     <h5 class="mb-2">Drag and drop your document here</h5>
@@ -26,27 +26,33 @@
     <div class="row mt-4">
         <div class="col-md-12">
             <div id="progressContainer" class="d-none">
-                <div class="progress-wrapper">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                             role="progressbar" style="width: 0%"></div>
-                    </div>
-                    <small class="text-muted mt-2 d-block text-center">
-                        Processing document<span class="loading-dots"></span>
-                    </small>
+                <div class="processing-animation">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="text-center">
+                    <p class="text-muted mb-0">Processing your document<span class="loading-dots"></span></p>
                 </div>
             </div>
 
             <div id="resultContainer" class="d-none">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Analysis Results</h5>
-                        <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
-                            <i data-feather="download"></i> Export JSON
-                        </button>
+                <div class="analysis-card">
+                    <div class="analysis-section">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Analysis Results</h5>
+                            <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
+                                <i data-feather="download"></i> Export JSON
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="analysisContent"></div>
+                    <div class="analysis-section">
+                        <div class="analysis-title">
+                            <i data-feather="file-text"></i>
+                            Summary
+                        </div>
+                        <div id="analysisContent" class="analysis-content"></div>
                     </div>
                 </div>
             </div>

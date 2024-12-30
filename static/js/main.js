@@ -1,14 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const progressContainer = document.getElementById('progressContainer');
-    const progressBar = document.querySelector('.progress-bar');
     const resultContainer = document.getElementById('resultContainer');
     const analysisContent = document.getElementById('analysisContent');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
     let currentAnalysis = null;
+
+    // Theme handling
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+    }
+
+    function updateThemeIcon(theme) {
+        themeIcon.setAttribute('data-feather', theme === 'dark' ? 'sun' : 'moon');
+        feather.replace();
+    }
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
 
     // Initialize Feather icons
     feather.replace();
+
+    // Initialize theme
+    initTheme();
 
     // Drag and drop handlers with improved feedback
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -38,24 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.files.length) handleFile(e.target.files[0]);
     });
 
-    // Export button handler
-    document.querySelector('.export-button').addEventListener('click', () => {
-        if (currentAnalysis) {
-            exportAnalysis(currentAnalysis);
-        }
-    });
-
     function handleFile(file) {
-        // Validate file type
+        // Validate file type with improved error messages
         const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         if (!validTypes.includes(file.type)) {
-            showToast('Please upload a PDF or Word document', 'error');
+            showError('Please upload a PDF or Word document');
             return;
         }
 
-        // Validate file size (20MB)
+        // Validate file size (20MB) with user-friendly message
         if (file.size > 20 * 1024 * 1024) {
-            showToast('File size must be less than 20MB', 'error');
+            showError('File size must be less than 20MB');
             return;
         }
 
@@ -66,70 +84,60 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('file', file);
 
-        // Show progress
+        // Show progress animation
         progressContainer.classList.remove('d-none');
         resultContainer.classList.add('d-none');
-        progressBar.style.width = '0%';
-
-        // Simulate progress until we get the response
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            if (progress < 90) {
-                progress += Math.random() * 10;
-                progressBar.style.width = `${Math.min(90, progress)}%`;
-            }
-        }, 500);
 
         fetch('/upload', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Error processing document');
+                });
             }
-            clearInterval(progressInterval);
-            progressBar.style.width = '100%';
-            setTimeout(() => {
-                progressContainer.classList.add('d-none');
-                showResults(data);
-            }, 500);
+            return response.json();
+        })
+        .then(data => {
+            progressContainer.classList.add('d-none');
+            showResults(data);
             showToast('Document processed successfully', 'success');
         })
         .catch(error => {
-            clearInterval(progressInterval);
-            showToast(error.message || 'Error processing document', 'error');
+            showError(error.message || 'Error processing document');
             progressContainer.classList.add('d-none');
         });
     }
 
     function showResults(data) {
         currentAnalysis = data;
-        // Display analysis
-        analysisContent.innerHTML = `
-            <div class="card">
-                <div class="card-body">
-                    <h6>Summary</h6>
-                    <p>${data.analysis.summary}</p>
-                </div>
-            </div>
-        `;
-
+        analysisContent.innerHTML = `<p>${data.analysis.summary}</p>`;
         resultContainer.classList.remove('d-none');
+
+        // Re-initialize Feather icons for dynamic content
+        feather.replace();
     }
 
-    function exportAnalysis(data) {
-        const content = JSON.stringify(data, null, 2);
-        const blob = new Blob([content], { type: 'application/json' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'document-analysis.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `
+            <i data-feather="alert-circle"></i>
+            <span>${message}</span>
+        `;
+
+        // Insert error message before the upload container
+        dropZone.parentNode.insertBefore(errorDiv, dropZone);
+
+        // Initialize Feather icons for the error icon
+        feather.replace();
+
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
     }
 
     function showToast(message, type) {
@@ -139,9 +147,27 @@ document.addEventListener('DOMContentLoaded', function() {
             gravity: "top",
             position: 'right',
             style: {
-                background: type === 'error' ? '#dc3545' : '#198754'
+                background: type === 'error' ? '#ef4444' : '#10b981',
+                borderRadius: '6px',
+                padding: '12px 24px'
             },
-            className: "custom-toast"
+            onClick: function(){} // Callback after click
         }).showToast();
     }
+
+    // Export functionality
+    document.querySelector('.export-button').addEventListener('click', () => {
+        if (currentAnalysis) {
+            const content = JSON.stringify(currentAnalysis, null, 2);
+            const blob = new Blob([content], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'document-analysis.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+    });
 });
