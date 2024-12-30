@@ -71,10 +71,9 @@ def upload_file():
             db.session.add(document)
             db.session.commit()
 
-            # Create payment intent with all supported payment methods
+            # Create payment intent with payment method configuration
             payment_intent = create_payment_intent(
                 ANALYSIS_COST,
-                payment_methods=['card', 'alipay', 'wechat_pay', 'apple_pay'],
                 currency='cny'
             )
 
