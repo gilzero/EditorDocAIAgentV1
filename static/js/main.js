@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError(error.message || 'Payment failed');
             submitButton.disabled = false;
-            submitButton.textContent = 'Pay $0.15';
+            submitButton.textContent = 'Pay $0.50';
         }
     }
 
