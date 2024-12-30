@@ -10,7 +10,7 @@ from utils.stripe_utils import create_payment_intent, confirm_payment_intent, ST
 
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 UPLOAD_FOLDER = '/tmp'
-ANALYSIS_COST = 50  # $0.50 in cents
+ANALYSIS_COST = 300  # ¥3.00 in cents
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -71,10 +71,11 @@ def upload_file():
             db.session.add(document)
             db.session.commit()
 
-            # Create payment intent with Alipay support
+            # Create payment intent with Alipay support and CNY currency
             payment_intent = create_payment_intent(
                 ANALYSIS_COST,
-                payment_methods=['card', 'alipay']
+                payment_methods=['card', 'alipay'],
+                currency='cny'
             )
 
             # Clean up temp file
@@ -88,7 +89,8 @@ def upload_file():
                 'document_id': document.id,
                 'client_secret': payment_intent.client_secret,
                 'publishable_key': STRIPE_PUBLISHABLE_KEY,
-                'amount': ANALYSIS_COST
+                'amount': ANALYSIS_COST,
+                'currency': 'cny'
             })
 
         except Exception as e:

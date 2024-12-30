@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError(error.message || 'Payment failed');
             submitButton.disabled = false;
-            submitButton.textContent = 'Pay $0.50';
+            submitButton.textContent = 'Pay ¥3'; // Updated button text
         }
     }
 
