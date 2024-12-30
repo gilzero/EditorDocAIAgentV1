@@ -10,16 +10,31 @@ def process_document(file_path):
         result = md.convert(file_path)
         app.logger.info("Document conversion successful")
 
+        # Extract metadata with proper error handling
         metadata = {
-            'text_content': result.text_content,
-            'author': result.metadata.get('author', 'Unknown'),
-            'creation_date': result.metadata.get('creation_date', 'Unknown'),
-            'modification_date': result.metadata.get('modification_date', 'Unknown'),
-            'title': result.metadata.get('title', 'Unknown'),
-            'page_count': result.metadata.get('page_count', 0)
+            'text_content': getattr(result, 'text_content', ''),
+            'author': 'Unknown',
+            'creation_date': 'Unknown',
+            'modification_date': 'Unknown',
+            'title': 'Unknown',
+            'page_count': 0
         }
 
-        app.logger.info("Metadata extracted successfully")
+        # Try to get additional metadata if available
+        try:
+            if hasattr(result, 'document_info'):
+                info = result.document_info
+                metadata.update({
+                    'author': info.get('author', 'Unknown'),
+                    'creation_date': info.get('created', 'Unknown'),
+                    'modification_date': info.get('modified', 'Unknown'),
+                    'title': info.get('title', 'Unknown'),
+                    'page_count': info.get('pages', 0)
+                })
+        except Exception as e:
+            app.logger.warning(f"Could not extract additional metadata: {str(e)}")
+
+        app.logger.info("Metadata extraction completed")
         return metadata
     except Exception as e:
         app.logger.error(f"Error processing document: {str(e)}")
