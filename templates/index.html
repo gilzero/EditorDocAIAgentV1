@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="paper-container">
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h1>Document Analysis</h1>
+            <p class="lead">Upload PDF or Word documents for AI-powered analysis</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="upload-container" id="dropZone">
+                <div class="upload-content">
+                    <i data-feather="upload-cloud" class="upload-icon"></i>
+                    <p>Drag and drop your document here or click to browse</p>
+                    <small class="text-muted">Supported formats: PDF, DOCX (Max 20MB)</small>
+                    <input type="file" id="fileInput" accept=".pdf,.docx" class="d-none">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div id="progressContainer" class="d-none">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="resultContainer" class="d-none">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Analysis Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Document Metadata</h6>
+                                <table class="table table-sm">
+                                    <tbody id="metadataTable"></tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>AI Analysis</h6>
+                                <div id="analysisContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

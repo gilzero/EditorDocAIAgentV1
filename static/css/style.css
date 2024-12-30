@@ -1,0 +1,60 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.paper-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.upload-container {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-container:hover {
+    border-color: #0d6efd;
+    background-color: #f1f4f9;
+}
+
+.upload-container.dragover {
+    border-color: #0d6efd;
+    background-color: #e9ecef;
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.progress {
+    height: 0.5rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid #eee;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand i {
+    margin-right: 0.5rem;
+}
