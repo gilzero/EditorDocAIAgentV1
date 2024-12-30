@@ -1,3 +1,23 @@
+// Global function for toggling sections
+function toggleSection(sectionId) {
+    const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
+    const content = document.getElementById(`section-${sectionId}`);
+    if (!header || !content) return;
+
+    const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+    // Toggle aria-expanded
+    header.setAttribute('aria-expanded', !isExpanded);
+
+    // Toggle content visibility
+    content.classList.toggle('active');
+
+    // Announce to screen readers
+    if (!isExpanded) {
+        content.focus();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize variables
     const dropZone = document.getElementById('dropZone');
@@ -265,23 +285,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return content;
     }
 
-    function toggleSection(sectionId) {
-        const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
-        const content = document.getElementById(`section-${sectionId}`);
-        const isExpanded = header.getAttribute('aria-expanded') === 'true';
-
-        // Toggle aria-expanded
-        header.setAttribute('aria-expanded', !isExpanded);
-
-        // Toggle content visibility
-        content.classList.toggle('active');
-
-        // Announce to screen readers
-        if (!isExpanded) {
-            content.focus();
-        }
-    }
-
     // Add keyboard support for section headers
     document.addEventListener('keydown', function(event) {
         if (event.target.classList.contains('analysis-section-header')) {
@@ -292,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
 
     function showError(message) {
         const errorDiv = document.createElement('div');
