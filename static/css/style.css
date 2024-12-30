@@ -406,3 +406,102 @@ body {
 [data-theme="dark"] #submit-payment {
     background-color: var(--primary-color);
 }
+
+/* Add these styles to the existing CSS file */
+
+.analysis-accordion {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.analysis-section-header {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    margin-bottom: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.analysis-section-header:hover {
+    background-color: var(--hover-bg);
+}
+
+.analysis-section-header h6 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.analysis-section-content {
+    background-color: var(--card-bg);
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.analysis-section-content.active {
+    padding: 1rem;
+    max-height: 1000px;
+    border-color: var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+.analysis-section-header[aria-expanded="true"] .chevron-icon {
+    transform: rotate(180deg);
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .analysis-section-header {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .analysis-section-content {
+    background-color: var(--card-bg);
+}
+
+/* Enhanced typography for analysis content */
+.analysis-content {
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.analysis-content h4 {
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.analysis-content ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.analysis-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Accessibility focus styles */
+.analysis-section-header:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
+.analysis-section-header:focus:not(:focus-visible) {
+    outline: none;
+}

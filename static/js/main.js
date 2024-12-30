@@ -194,12 +194,105 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showResults(data) {
         currentAnalysis = data;
-        analysisContent.innerHTML = `<p>${data.analysis.summary}</p>`;
+        const analysisContent = data.analysis.summary;
+        const accordion = document.getElementById('analysisAccordion');
+        accordion.innerHTML = ''; // Clear existing content
+
+        // Define the sections to extract from the analysis
+        const sections = [
+            { id: 'summary', title: '摘要', icon: 'file-text' },
+            { id: 'characters', title: '人物分析', icon: 'users' },
+            { id: 'plot', title: '情节分析', icon: 'book-open' },
+            { id: 'themes', title: '主题分析', icon: 'feather' },
+            { id: 'readability', title: '可读性评估', icon: 'check-circle' },
+            { id: 'sentiment', title: '情感分析', icon: 'heart' },
+            { id: 'style', title: '风格和一致性', icon: 'edit-3' }
+        ];
+
+        // Extract content for each section using regex
+        sections.forEach((section, index) => {
+            const sectionRegex = new RegExp(`${section.title}[：:](.*?)(?=\\n\\n|$)`, 's');
+            const match = analysisContent.match(sectionRegex);
+            const content = match ? match[1].trim() : '暂无内容';
+
+            // Create section HTML
+            const sectionHtml = `
+                <div class="analysis-section-wrapper">
+                    <div class="analysis-section-header" 
+                         role="button"
+                         aria-expanded="false"
+                         aria-controls="section-${section.id}"
+                         tabindex="0"
+                         onclick="toggleSection('${section.id}')">
+                        <h6>
+                            <i data-feather="${section.icon}" aria-hidden="true"></i>
+                            ${section.title}
+                        </h6>
+                        <i data-feather="chevron-down" class="chevron-icon" aria-hidden="true"></i>
+                    </div>
+                    <div id="section-${section.id}" 
+                         class="analysis-section-content"
+                         role="region"
+                         aria-labelledby="header-${section.id}">
+                        <div class="analysis-content">${formatContent(content)}</div>
+                    </div>
+                </div>
+            `;
+            accordion.innerHTML += sectionHtml;
+        });
+
+        // Initialize Feather icons for the new content
+        feather.replace();
         resultContainer.classList.remove('d-none');
 
-        // Re-initialize Feather icons for dynamic content
-        feather.replace();
+        // Automatically expand the first section
+        toggleSection('summary');
     }
+
+    function formatContent(content) {
+        // Convert markdown-style lists to HTML
+        content = content.replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>');
+        if (content.includes('<li>')) {
+            content = '<ul>' + content + '</ul>';
+        }
+
+        // Convert bold text
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Convert paragraphs
+        content = content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+        return content;
+    }
+
+    function toggleSection(sectionId) {
+        const header = document.querySelector(`[aria-controls="section-${sectionId}"]`);
+        const content = document.getElementById(`section-${sectionId}`);
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+        // Toggle aria-expanded
+        header.setAttribute('aria-expanded', !isExpanded);
+
+        // Toggle content visibility
+        content.classList.toggle('active');
+
+        // Announce to screen readers
+        if (!isExpanded) {
+            content.focus();
+        }
+    }
+
+    // Add keyboard support for section headers
+    document.addEventListener('keydown', function(event) {
+        if (event.target.classList.contains('analysis-section-header')) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const sectionId = event.target.getAttribute('aria-controls').replace('section-', '');
+                toggleSection(sectionId);
+            }
+        }
+    });
+
 
     function showError(message) {
         const errorDiv = document.createElement('div');

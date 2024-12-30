@@ -61,20 +61,26 @@
             <div id="resultContainer" class="d-none" role="region" aria-label="Analysis results">
                 <div class="analysis-card">
                     <div class="analysis-section">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="mb-0">Analysis Results</h5>
                             <button class="btn btn-outline-primary btn-sm export-button" data-format="json" 
                                     aria-label="Export results as JSON">
                                 <i data-feather="download" aria-hidden="true"></i> Export JSON
                             </button>
                         </div>
-                    </div>
-                    <div class="analysis-section">
-                        <div class="analysis-title">
-                            <i data-feather="file-text" aria-hidden="true"></i>
-                            Summary
+                        <div id="analysisAccordion" class="analysis-accordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        <i data-feather="file-text" aria-hidden="true"></i> Summary
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#analysisAccordion">
+                                    <div id="analysisContent" class="accordion-body" aria-live="polite"></div>
+                                </div>
+                            </div>
+                            <!-- Analysis sections will be dynamically added here -->
                         </div>
-                        <div id="analysisContent" class="analysis-content" aria-live="polite"></div>
                     </div>
                 </div>
             </div>
