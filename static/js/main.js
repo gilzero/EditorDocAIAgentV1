@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme
     initTheme();
 
-    // Drag and drop handlers with improved feedback
+    // Drag and drop handlers
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -89,14 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function handleFile(file) {
-        // Validate file type with improved error messages
         const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         if (!validTypes.includes(file.type)) {
             showError('Please upload a PDF or Word document');
             return;
         }
 
-        // Validate file size (20MB) with user-friendly message
         if (file.size > 20 * 1024 * 1024) {
             showError('File size must be less than 20MB');
             return;
@@ -109,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('file', file);
 
-        // Show progress animation
         progressContainer.classList.remove('d-none');
         paymentContainer.classList.add('d-none');
         resultContainer.classList.add('d-none');
@@ -141,13 +138,19 @@ document.addEventListener('DOMContentLoaded', function() {
         currentDocumentId = data.document_id;
         clientSecret = data.client_secret;
 
-        // Initialize Stripe
+        // Initialize Stripe with Alipay
         stripe = Stripe(data.publishable_key);
         elements = stripe.elements();
 
-        // Create card element
-        const cardElement = elements.create('card');
-        cardElement.mount('#card-element');
+        // Create card element with additional payment methods
+        const paymentElement = elements.create('payment', {
+            payment_method_types: ['card', 'alipay'],
+            alipay: {
+                reusable: true
+            }
+        });
+
+        paymentElement.mount('#card-element');
 
         // Handle form submission
         const form = document.getElementById('payment-form');
@@ -156,13 +159,68 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show payment form and trigger confetti
         paymentContainer.classList.remove('d-none');
 
-        // Trigger confetti animation
         confetti({
             particleCount: 100,
             spread: 70,
             origin: { y: 0.6 },
             colors: ['#0d6efd', '#198754', '#ffc107']
         });
+    }
+
+    function showResults(data) {
+        currentAnalysis = data;
+        const analysisContent = data.analysis.summary;
+        const accordion = document.getElementById('analysisAccordion');
+        accordion.innerHTML = ''; // Clear existing content
+
+        // Define the sections to extract from the analysis
+        const sections = [
+            { id: 'summary', title: '摘要', icon: 'file-text', regex: /摘要[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'characters', title: '人物分析', icon: 'users', regex: /人物分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'plot', title: '情节分析', icon: 'book-open', regex: /情节分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'themes', title: '主题分析', icon: 'feather', regex: /主题分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'readability', title: '可读性评估', icon: 'check-circle', regex: /可读性评估[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'sentiment', title: '情感分析', icon: 'heart', regex: /情感分析[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$))/ },
+            { id: 'style', title: '风格和一致性', icon: 'edit-3', regex: /风格和一致性[：:]([\s\S]*?)(?=\n*(?:\d+\.|####|$)|$)/ }
+        ];
+
+        // Extract content for each section using improved regex
+        sections.forEach((section, index) => {
+            const match = analysisContent.match(section.regex);
+            const content = match ? match[1].trim() : '暂无内容';
+
+            // Create section HTML
+            const sectionHtml = `
+                <div class="analysis-section-wrapper">
+                    <div class="analysis-section-header" 
+                         role="button"
+                         aria-expanded="false"
+                         aria-controls="section-${section.id}"
+                         tabindex="0"
+                         onclick="toggleSection('${section.id}')">
+                        <h6>
+                            <i data-feather="${section.icon}" aria-hidden="true"></i>
+                            ${section.title}
+                        </h6>
+                        <i data-feather="chevron-down" class="chevron-icon" aria-hidden="true"></i>
+                    </div>
+                    <div id="section-${section.id}" 
+                         class="analysis-section-content"
+                         role="region"
+                         aria-labelledby="header-${section.id}">
+                        <div class="analysis-content">${formatContent(content)}</div>
+                    </div>
+                </div>
+            `;
+            accordion.innerHTML += sectionHtml;
+        });
+
+        // Initialize Feather icons for the new content
+        feather.replace();
+        resultContainer.classList.remove('d-none');
+
+        // Automatically expand the first section
+        toggleSection('summary');
     }
 
     async function handlePaymentSubmission(event) {
@@ -212,63 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function showResults(data) {
-        currentAnalysis = data;
-        const analysisContent = data.analysis.summary;
-        const accordion = document.getElementById('analysisAccordion');
-        accordion.innerHTML = ''; // Clear existing content
-
-        // Define the sections to extract from the analysis
-        const sections = [
-            { id: 'summary', title: '摘要', icon: 'file-text' },
-            { id: 'characters', title: '人物分析', icon: 'users' },
-            { id: 'plot', title: '情节分析', icon: 'book-open' },
-            { id: 'themes', title: '主题分析', icon: 'feather' },
-            { id: 'readability', title: '可读性评估', icon: 'check-circle' },
-            { id: 'sentiment', title: '情感分析', icon: 'heart' },
-            { id: 'style', title: '风格和一致性', icon: 'edit-3' }
-        ];
-
-        // Extract content for each section using regex
-        sections.forEach((section, index) => {
-            const sectionRegex = new RegExp(`${section.title}[：:](.*?)(?=\\n\\n|$)`, 's');
-            const match = analysisContent.match(sectionRegex);
-            const content = match ? match[1].trim() : '暂无内容';
-
-            // Create section HTML
-            const sectionHtml = `
-                <div class="analysis-section-wrapper">
-                    <div class="analysis-section-header" 
-                         role="button"
-                         aria-expanded="false"
-                         aria-controls="section-${section.id}"
-                         tabindex="0"
-                         onclick="toggleSection('${section.id}')">
-                        <h6>
-                            <i data-feather="${section.icon}" aria-hidden="true"></i>
-                            ${section.title}
-                        </h6>
-                        <i data-feather="chevron-down" class="chevron-icon" aria-hidden="true"></i>
-                    </div>
-                    <div id="section-${section.id}" 
-                         class="analysis-section-content"
-                         role="region"
-                         aria-labelledby="header-${section.id}">
-                        <div class="analysis-content">${formatContent(content)}</div>
-                    </div>
-                </div>
-            `;
-            accordion.innerHTML += sectionHtml;
-        });
-
-        // Initialize Feather icons for the new content
-        feather.replace();
-        resultContainer.classList.remove('d-none');
-
-        // Automatically expand the first section
-        toggleSection('summary');
-    }
-
     function formatContent(content) {
         // Convert markdown-style lists to HTML
         content = content.replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>');
@@ -280,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
         content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         // Convert paragraphs
-        content = content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+        content = content.split('\n\n').map(p => `<p>${p.trim()}</p>`).join('');
 
         return content;
     }
@@ -304,13 +305,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>${message}</span>
         `;
 
-        // Insert error message before the upload container
         dropZone.parentNode.insertBefore(errorDiv, dropZone);
-
-        // Initialize Feather icons for the error icon
         feather.replace();
 
-        // Remove error message after 5 seconds
         setTimeout(() => {
             errorDiv.remove();
         }, 5000);
@@ -326,8 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 background: type === 'error' ? '#ef4444' : '#10b981',
                 borderRadius: '6px',
                 padding: '12px 24px'
-            },
-            onClick: function(){} // Callback after click
+            }
         }).showToast();
     }
 

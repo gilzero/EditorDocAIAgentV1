@@ -5,13 +5,13 @@ from app import app
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 
-def create_payment_intent(amount, currency='usd'):
+def create_payment_intent(amount, payment_methods=['card'], currency='usd'):
     """Create a payment intent for document analysis."""
     try:
         intent = stripe.PaymentIntent.create(
             amount=amount,
             currency=currency,
-            payment_method_types=['card'],
+            payment_method_types=payment_methods,
             metadata={'service': 'document_analysis'}
         )
         return intent

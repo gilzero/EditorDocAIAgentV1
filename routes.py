@@ -27,6 +27,7 @@ def upload_file():
             return jsonify({'error': 'No file provided'}), 400
 
         file = request.files['file']
+        analysis_options = request.form.get('analysis_options', {})  # Get analysis options if provided
 
         if file.filename == '':
             app.logger.error("No file selected")
@@ -70,8 +71,11 @@ def upload_file():
             db.session.add(document)
             db.session.commit()
 
-            # Create payment intent
-            payment_intent = create_payment_intent(ANALYSIS_COST)
+            # Create payment intent with Alipay support
+            payment_intent = create_payment_intent(
+                ANALYSIS_COST,
+                payment_methods=['card', 'alipay']
+            )
 
             # Clean up temp file
             try:
@@ -106,6 +110,7 @@ def payment_success():
         data = request.get_json()
         payment_intent_id = data.get('payment_intent_id')
         document_id = data.get('document_id')
+        analysis_options = data.get('analysis_options', {})  # Get analysis options
 
         if not payment_intent_id or not document_id:
             return jsonify({'error': 'Missing required parameters'}), 400
@@ -131,8 +136,11 @@ def payment_success():
         )
         db.session.add(payment)
 
-        # Process the document with AI
-        analysis_result = analyze_document(document.doc_metadata['text_content'])
+        # Process the document with AI using analysis options
+        analysis_result = analyze_document(
+            document.doc_metadata['text_content'],
+            analysis_options=analysis_options
+        )
         document.analysis_summary = analysis_result['summary']
 
         db.session.commit()

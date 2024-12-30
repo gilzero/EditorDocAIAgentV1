@@ -23,6 +23,53 @@
                            aria-label="Choose a file to upload">
                 </div>
             </div>
+
+            <!-- Analysis Options -->
+            <div class="analysis-options mt-4">
+                <h5>Analysis Options</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="characterAnalysis" checked>
+                            <label class="form-check-label" for="characterAnalysis">
+                                Character Analysis
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="plotAnalysis" checked>
+                            <label class="form-check-label" for="plotAnalysis">
+                                Plot Analysis
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="thematicAnalysis" checked>
+                            <label class="form-check-label" for="thematicAnalysis">
+                                Thematic Analysis
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="readabilityAssessment" checked>
+                            <label class="form-check-label" for="readabilityAssessment">
+                                Readability Assessment
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="sentimentAnalysis" checked>
+                            <label class="form-check-label" for="sentimentAnalysis">
+                                Sentiment Analysis
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="styleConsistency" checked>
+                            <label class="form-check-label" for="styleConsistency">
+                                Style and Consistency
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -47,7 +94,7 @@
                         <p class="mb-3">Complete the payment to receive your document analysis</p>
                         <form id="payment-form">
                             <div class="mb-3">
-                                <div id="card-element" class="form-control" role="group" aria-label="Credit card input"></div>
+                                <div id="card-element" class="form-control" role="group" aria-label="Payment input"></div>
                                 <div id="card-errors" class="text-danger mt-2" role="alert" aria-live="polite"></div>
                             </div>
                             <button class="btn btn-primary w-100" id="submit-payment" aria-label="Pay $0.50">
@@ -69,16 +116,6 @@
                             </button>
                         </div>
                         <div id="analysisAccordion" class="analysis-accordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingOne">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                        <i data-feather="file-text" aria-hidden="true"></i> Summary
-                                    </button>
-                                </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#analysisAccordion">
-                                    <div id="analysisContent" class="accordion-body" aria-live="polite"></div>
-                                </div>
-                            </div>
                             <!-- Analysis sections will be dynamically added here -->
                         </div>
                     </div>
