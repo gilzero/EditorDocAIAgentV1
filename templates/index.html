@@ -25,9 +25,14 @@
     <div class="row mt-4">
         <div class="col-md-12">
             <div id="progressContainer" class="d-none">
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                         role="progressbar" style="width: 0%"></div>
+                <div class="progress-wrapper">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-center">
+                        Processing document<span class="loading-dots"></span>
+                    </small>
                 </div>
             </div>
 
@@ -35,6 +40,17 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">Analysis Results</h5>
+                        <div class="export-buttons">
+                            <button class="btn btn-outline-primary btn-sm export-button" data-format="pdf">
+                                <i data-feather="file-text"></i> PDF
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm export-button" data-format="json">
+                                <i data-feather="code"></i> JSON
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm export-button" data-format="csv">
+                                <i data-feather="file"></i> CSV
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="analysisContent"></div>
