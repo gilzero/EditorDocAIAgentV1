@@ -140,13 +140,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Initialize Stripe with Alipay
         stripe = Stripe(data.publishable_key);
-        elements = stripe.elements();
+        elements = stripe.elements({
+            clientSecret: data.client_secret,
+            appearance: {
+                theme: 'stripe'
+            }
+        });
 
-        // Create card element with additional payment methods
+        // Create payment element with additional payment methods
         const paymentElement = elements.create('payment', {
-            payment_method_types: ['card', 'alipay'],
-            alipay: {
-                reusable: true
+            layout: {
+                type: 'tabs',
+                defaultCollapsed: false
             }
         });
 
@@ -165,6 +170,68 @@ document.addEventListener('DOMContentLoaded', function() {
             origin: { y: 0.6 },
             colors: ['#0d6efd', '#198754', '#ffc107']
         });
+    }
+
+    async function handlePaymentSubmission(event) {
+        event.preventDefault();
+
+        const submitButton = document.getElementById('submit-payment');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Processing...';
+
+        try {
+            // Confirm the payment using PaymentElement
+            const {error} = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin,
+                },
+                redirect: 'if_required'
+            });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // If we get here without a redirect, payment was successful
+            const response = await fetch('/payment/success', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    payment_intent_id: clientSecret.split('_secret_')[0],
+                    document_id: currentDocumentId,
+                    analysis_options: getAnalysisOptions()
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Error processing payment');
+            }
+
+            paymentContainer.classList.add('d-none');
+            showResults(result);
+            showToast('Payment successful', 'success');
+
+        } catch (error) {
+            showError(error.message || 'Payment failed');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Pay ¥3';
+        }
+    }
+
+    function getAnalysisOptions() {
+        return {
+            characterAnalysis: document.getElementById('characterAnalysis').checked,
+            plotAnalysis: document.getElementById('plotAnalysis').checked,
+            thematicAnalysis: document.getElementById('thematicAnalysis').checked,
+            readabilityAssessment: document.getElementById('readabilityAssessment').checked,
+            sentimentAnalysis: document.getElementById('sentimentAnalysis').checked,
+            styleConsistency: document.getElementById('styleConsistency').checked
+        };
     }
 
     function showResults(data) {
@@ -221,53 +288,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Automatically expand the first section
         toggleSection('summary');
-    }
-
-    async function handlePaymentSubmission(event) {
-        event.preventDefault();
-
-        const submitButton = document.getElementById('submit-payment');
-        submitButton.disabled = true;
-        submitButton.textContent = 'Processing...';
-
-        try {
-            const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: elements.getElement('card'),
-                }
-            });
-
-            if (error) {
-                throw new Error(error.message);
-            }
-
-            // Payment successful, get analysis results
-            const response = await fetch('/payment/success', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    payment_intent_id: paymentIntent.id,
-                    document_id: currentDocumentId
-                })
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Error processing payment');
-            }
-
-            paymentContainer.classList.add('d-none');
-            showResults(result);
-            showToast('Payment successful', 'success');
-
-        } catch (error) {
-            showError(error.message || 'Payment failed');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Pay ¥3'; // Updated button text
-        }
     }
 
     function formatContent(content) {
