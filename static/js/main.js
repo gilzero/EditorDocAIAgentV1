@@ -242,13 +242,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Define the sections to extract from the analysis
         const sections = [
-            { id: 'summary', title: '摘要', icon: 'file-text', regex: /摘要[\s\S]*?(?=人物分析|$)/},
-            { id: 'characters', title: '人物分析', icon: 'users', regex: /人物分析[\s\S]*?(?=情节分析|$)/},
-            { id: 'plot', title: '情节分析', icon: 'book-open', regex: /情节分析[\s\S]*?(?=主题分析|$)/},
-            { id: 'themes', title: '主题分析', icon: 'feather', regex: /主题分析[\s\S]*?(?=可读性评估|$)/},
-            { id: 'readability', title: '可读性评估', icon: 'check-circle', regex: /可读性评估[\s\S]*?(?=情感分析|$)/},
-            { id: 'sentiment', title: '情感分析', icon: 'heart', regex: /情感分析[\s\S]*?(?=风格和一致性|$)/},
-            { id: 'style', title: '风格和一致性', icon: 'edit-3', regex: /风格和一致性[\s\S]*?(?=$)/}
+            { id: 'summary', title: '摘要：', icon: 'file-text', regex: /摘要：[\s\S]*?(?=\n*人物分析：|$)/},
+            { id: 'characters', title: '人物分析：', icon: 'users', regex: /人物分析：[\s\S]*?(?=\n*情节分析：|$)/},
+            { id: 'plot', title: '情节分析：', icon: 'book-open', regex: /情节分析：[\s\S]*?(?=\n*主题分析：|$)/},
+            { id: 'themes', title: '主题分析：', icon: 'feather', regex: /主题分析：[\s\S]*?(?=\n*可读性评估：|$)/},
+            { id: 'readability', title: '可读性评估：', icon: 'check-circle', regex: /可读性评估：[\s\S]*?(?=\n*情感分析：|$)/},
+            { id: 'sentiment', title: '情感分析：', icon: 'heart', regex: /情感分析：[\s\S]*?(?=\n*风格和一致性：|$)/},
+            { id: 'style', title: '风格和一致性：', icon: 'edit-3', regex: /风格和一致性：[\s\S]*?(?=$)/}
         ];
 
         // Extract content for each section using improved regex
@@ -256,10 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const match = analysisContent.match(section.regex);
             let content = match ? match[0] : '暂无内容';
 
-            // Remove the section title from the content
+            // Remove the section title and colon from the content
             content = content.replace(new RegExp(`^${section.title}`), '').trim();
-            // Remove any heading markers
-            content = content.replace(/^[#\s]*/, '');
+
+            // Remove any numbers at start of lines and extra whitespace
+            content = content.replace(/^\d+\.\s*/gm, '').trim();
 
             // Create section HTML
             const sectionHtml = `
@@ -272,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
                          onclick="toggleSection('${section.id}')">
                         <h6>
                             <i data-feather="${section.icon}" aria-hidden="true"></i>
-                            ${section.title}
+                            ${section.title.replace('：', '')}
                         </h6>
                         <i data-feather="chevron-down" class="chevron-icon" aria-hidden="true"></i>
                     </div>
@@ -300,8 +301,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return content;
         }
 
-        // Remove common markdown headers and extra spaces
-        content = content.replace(/^#+\s*|^\s+/gm, '');
+        // Remove any remaining section numbers and clean up whitespace
+        content = content.replace(/^\d+\.\s*/gm, '')
+                        .replace(/^#+\s*|^\s+/gm, '')
+                        .trim();
 
         // Convert markdown-style lists to HTML
         content = content.replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>');
