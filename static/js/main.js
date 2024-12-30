@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.querySelector('.progress-bar');
     const resultContainer = document.getElementById('resultContainer');
-    const metadataTable = document.getElementById('metadataTable');
     const analysisContent = document.getElementById('analysisContent');
 
     // Drag and drop handlers
@@ -79,16 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showResults(data) {
-        // Display metadata
-        metadataTable.innerHTML = Object.entries(data.metadata)
-            .filter(([key]) => key !== 'text_content')
-            .map(([key, value]) => `
-                <tr>
-                    <td class="text-muted">${key.replace(/_/g, ' ').toUpperCase()}</td>
-                    <td>${value}</td>
-                </tr>
-            `).join('');
-
         // Display analysis
         analysisContent.innerHTML = `
             <div class="card">

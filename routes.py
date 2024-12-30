@@ -84,7 +84,6 @@ def upload_file():
 
             return jsonify({
                 'success': True,
-                'metadata': doc_metadata,
                 'analysis': analysis_result
             })
 
