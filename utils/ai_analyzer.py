@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 from app import app
 
+
 # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
 # do not change this unless explicitly requested by the user
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))

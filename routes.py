@@ -8,6 +8,8 @@ from utils.document_processor import process_document
 from utils.ai_analyzer import analyze_document
 from utils.stripe_utils import create_payment_intent, confirm_payment_intent, STRIPE_PUBLISHABLE_KEY
 
+
+
 ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 UPLOAD_FOLDER = '/tmp'
 ANALYSIS_COST = 300  # ¥3.00 in cents
