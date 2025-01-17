@@ -3,7 +3,7 @@
 @filepath models.py
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 class Document(db.Model):
@@ -13,9 +13,7 @@ class Document(db.Model):
     original_filename = db.Column(db.String(255), nullable=False)
     file_size = db.Column(db.Integer, nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    doc_metadata = db.Column(db.JSON)  
-    analysis_summary = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 class Payment(db.Model):
     """Model representing a payment transaction associated with a document."""
@@ -24,6 +22,6 @@ class Payment(db.Model):
     amount = db.Column(db.Integer, nullable=False)  # Amount in cents
     currency = db.Column(db.String(3), nullable=False, default='usd')
     status = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     document_id = db.Column(db.Integer, db.ForeignKey('document.id'), nullable=False)
     document = db.relationship('Document', backref=db.backref('payments', lazy=True))

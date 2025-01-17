@@ -1,0 +1,3169 @@
+├── .devcontainer
+    └── devcontainer.json
+├── .dockerignore
+├── .gitattributes
+├── .github
+    ├── dependabot.yml
+    └── workflows
+    │   ├── pre-commit.yml
+    │   └── tests.yml
+├── .gitignore
+├── .pre-commit-config.yaml
+├── CODE_OF_CONDUCT.md
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── SECURITY.md
+├── SUPPORT.md
+├── pyproject.toml
+├── src
+    └── markitdown
+    │   ├── __about__.py
+    │   ├── __init__.py
+    │   ├── __main__.py
+    │   ├── _markitdown.py
+    │   └── py.typed
+└── tests
+    ├── __init__.py
+    ├── test_files
+        ├── test.docx
+        ├── test.jpg
+        ├── test.json
+        ├── test.pptx
+        ├── test.xls
+        ├── test.xlsx
+        ├── test_blog.html
+        ├── test_files.zip
+        ├── test_llm.jpg
+        ├── test_mskanji.csv
+        ├── test_notebook.ipynb
+        ├── test_outlook_msg.msg
+        ├── test_rss.xml
+        ├── test_serp.html
+        ├── test_wikipedia.html
+        └── test_with_comment.docx
+    └── test_markitdown.py
+
+
+/.devcontainer/devcontainer.json:
+--------------------------------------------------------------------------------
+ 1 | // For format details, see https://aka.ms/devcontainer.json. For config options, see the
+ 2 | // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+ 3 | {
+ 4 | 	"name": "Existing Dockerfile",
+ 5 | 	"build": {
+ 6 | 		// Sets the run context to one level up instead of the .devcontainer folder.
+ 7 | 		"context": "..",
+ 8 | 		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
+ 9 | 		"dockerfile": "../Dockerfile",
+10 | 		"args": {
+11 | 			"INSTALL_GIT": "true"
+12 | 		}
+13 | 	},
+14 | 
+15 | 	// Features to add to the dev container. More info: https://containers.dev/features.
+16 | 	// "features": {},
+17 | 	"features": {
+18 | 		"ghcr.io/devcontainers-extra/features/hatch:2": {}
+19 | 	},
+20 | 
+21 | 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+22 | 	// "forwardPorts": [],
+23 | 
+24 | 	// Uncomment the next line to run commands after the container is created.
+25 | 	// "postCreateCommand": "cat /etc/os-release",
+26 | 
+27 | 	// Configure tool-specific properties.
+28 | 	// "customizations": {},
+29 | 
+30 | 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
+31 | 	"remoteUser": "root"
+32 | }
+33 | 
+
+
+--------------------------------------------------------------------------------
+/.dockerignore:
+--------------------------------------------------------------------------------
+1 | *
+
+
+--------------------------------------------------------------------------------
+/.gitattributes:
+--------------------------------------------------------------------------------
+1 | tests/test_files/** linguist-vendored
+2 | 
+
+
+--------------------------------------------------------------------------------
+/.github/dependabot.yml:
+--------------------------------------------------------------------------------
+1 | version: 2
+2 | updates:
+3 |   - package-ecosystem: "github-actions"
+4 |     directory: "/"
+5 |     schedule:
+6 |       interval: "weekly"
+7 | 
+
+
+--------------------------------------------------------------------------------
+/.github/workflows/pre-commit.yml:
+--------------------------------------------------------------------------------
+ 1 | name: pre-commit
+ 2 | on: [pull_request]
+ 3 | 
+ 4 | jobs:
+ 5 |   pre-commit:
+ 6 |     runs-on: ubuntu-latest
+ 7 |     steps:
+ 8 |       - uses: actions/checkout@v4
+ 9 |       - name: Set up Python
+10 |         uses: actions/setup-python@v5
+11 |         with:
+12 |           python-version: "3.x"
+13 | 
+14 |       - name: Install pre-commit
+15 |         run: |
+16 |           pip install pre-commit
+17 |           pre-commit install --install-hooks
+18 | 
+19 |       - name: Run pre-commit
+20 |         run: pre-commit run --all-files
+21 | 
+
+
+--------------------------------------------------------------------------------
+/.github/workflows/tests.yml:
+--------------------------------------------------------------------------------
+ 1 | name: tests
+ 2 | on: [pull_request]
+ 3 | 
+ 4 | jobs:
+ 5 |   tests:
+ 6 |     runs-on: ubuntu-latest
+ 7 |     steps:
+ 8 |       - uses: actions/checkout@v4
+ 9 |       - uses: actions/setup-python@v5
+10 |         with:
+11 |           python-version: |
+12 |             3.10
+13 |             3.11
+14 |             3.12
+15 |       - name: Set up pip cache
+16 |         if: runner.os == 'Linux'
+17 |         uses: actions/cache@v4
+18 |         with:
+19 |           path: ~/.cache/pip
+20 |           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+21 |           restore-keys: ${{ runner.os }}-pip-
+22 |       - name: Install Hatch
+23 |         run: pipx install hatch
+24 |       - name: Run tests
+25 |         run: hatch test
+26 | 
+
+
+--------------------------------------------------------------------------------
+/.gitignore:
+--------------------------------------------------------------------------------
+  1 | .vscode
+  2 | 
+  3 | # Byte-compiled / optimized / DLL files
+  4 | __pycache__/
+  5 | *.py[cod]
+  6 | *$py.class
+  7 | 
+  8 | # C extensions
+  9 | *.so
+ 10 | 
+ 11 | # Distribution / packaging
+ 12 | .Python
+ 13 | build/
+ 14 | develop-eggs/
+ 15 | dist/
+ 16 | downloads/
+ 17 | eggs/
+ 18 | .eggs/
+ 19 | lib/
+ 20 | lib64/
+ 21 | parts/
+ 22 | sdist/
+ 23 | var/
+ 24 | wheels/
+ 25 | share/python-wheels/
+ 26 | *.egg-info/
+ 27 | .installed.cfg
+ 28 | *.egg
+ 29 | MANIFEST
+ 30 | 
+ 31 | # PyInstaller
+ 32 | #  Usually these files are written by a python script from a template
+ 33 | #  before PyInstaller builds the exe, so as to inject date/other infos into it.
+ 34 | *.manifest
+ 35 | *.spec
+ 36 | 
+ 37 | # Installer logs
+ 38 | pip-log.txt
+ 39 | pip-delete-this-directory.txt
+ 40 | 
+ 41 | # Unit test / coverage reports
+ 42 | htmlcov/
+ 43 | .tox/
+ 44 | .nox/
+ 45 | .coverage
+ 46 | .coverage.*
+ 47 | .cache
+ 48 | nosetests.xml
+ 49 | coverage.xml
+ 50 | *.cover
+ 51 | *.py,cover
+ 52 | .hypothesis/
+ 53 | .pytest_cache/
+ 54 | cover/
+ 55 | 
+ 56 | # Translations
+ 57 | *.mo
+ 58 | *.pot
+ 59 | 
+ 60 | # Django stuff:
+ 61 | *.log
+ 62 | local_settings.py
+ 63 | db.sqlite3
+ 64 | db.sqlite3-journal
+ 65 | 
+ 66 | # Flask stuff:
+ 67 | instance/
+ 68 | .webassets-cache
+ 69 | 
+ 70 | # Scrapy stuff:
+ 71 | .scrapy
+ 72 | 
+ 73 | # Sphinx documentation
+ 74 | docs/_build/
+ 75 | 
+ 76 | # PyBuilder
+ 77 | .pybuilder/
+ 78 | target/
+ 79 | 
+ 80 | # Jupyter Notebook
+ 81 | .ipynb_checkpoints
+ 82 | 
+ 83 | # IPython
+ 84 | profile_default/
+ 85 | ipython_config.py
+ 86 | 
+ 87 | # pyenv
+ 88 | #   For a library or package, you might want to ignore these files since the code is
+ 89 | #   intended to run in multiple environments; otherwise, check them in:
+ 90 | # .python-version
+ 91 | 
+ 92 | # pipenv
+ 93 | #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+ 94 | #   However, in case of collaboration, if having platform-specific dependencies or dependencies
+ 95 | #   having no cross-platform support, pipenv may install dependencies that don't work, or not
+ 96 | #   install all needed dependencies.
+ 97 | #Pipfile.lock
+ 98 | 
+ 99 | # poetry
+100 | #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+101 | #   This is especially recommended for binary packages to ensure reproducibility, and is more
+102 | #   commonly ignored for libraries.
+103 | #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+104 | #poetry.lock
+105 | 
+106 | # pdm
+107 | #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+108 | #pdm.lock
+109 | #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+110 | #   in version control.
+111 | #   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
+112 | .pdm.toml
+113 | .pdm-python
+114 | .pdm-build/
+115 | 
+116 | # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+117 | __pypackages__/
+118 | 
+119 | # Celery stuff
+120 | celerybeat-schedule
+121 | celerybeat.pid
+122 | 
+123 | # SageMath parsed files
+124 | *.sage.py
+125 | 
+126 | # Environments
+127 | .env
+128 | .venv
+129 | env/
+130 | venv/
+131 | ENV/
+132 | env.bak/
+133 | venv.bak/
+134 | 
+135 | # Spyder project settings
+136 | .spyderproject
+137 | .spyproject
+138 | 
+139 | # Rope project settings
+140 | .ropeproject
+141 | 
+142 | # mkdocs documentation
+143 | /site
+144 | 
+145 | # mypy
+146 | .mypy_cache/
+147 | .dmypy.json
+148 | dmypy.json
+149 | 
+150 | # Pyre type checker
+151 | .pyre/
+152 | 
+153 | # pytype static type analyzer
+154 | .pytype/
+155 | 
+156 | # Cython debug symbols
+157 | cython_debug/
+158 | 
+159 | # PyCharm
+160 | #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+161 | #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+162 | #  and can be added to the global gitignore or merged into this file.  For a more nuclear
+163 | #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+164 | #.idea/
+165 | src/.DS_Store
+166 | .DS_Store
+167 | 
+
+
+--------------------------------------------------------------------------------
+/.pre-commit-config.yaml:
+--------------------------------------------------------------------------------
+1 | repos:
+2 |   - repo: https://github.com/psf/black
+3 |     rev: 23.7.0 # Use the latest version of Black
+4 |     hooks:
+5 |       - id: black
+6 | 
+
+
+--------------------------------------------------------------------------------
+/CODE_OF_CONDUCT.md:
+--------------------------------------------------------------------------------
+ 1 | # Microsoft Open Source Code of Conduct
+ 2 | 
+ 3 | This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+ 4 | 
+ 5 | Resources:
+ 6 | 
+ 7 | - [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/)
+ 8 | - [Microsoft Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
+ 9 | - Contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with questions or concerns
+10 | 
+
+
+--------------------------------------------------------------------------------
+/Dockerfile:
+--------------------------------------------------------------------------------
+ 1 | FROM python:3.13-slim-bullseye
+ 2 | 
+ 3 | USER root
+ 4 | 
+ 5 | ARG INSTALL_GIT=false
+ 6 | RUN if [ "$INSTALL_GIT" = "true" ]; then \
+ 7 |     apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*; \
+ 8 |     fi
+ 9 | 
+10 | # Runtime dependency
+11 | RUN apt-get update && apt-get install -y --no-install-recommends \
+12 |     ffmpeg \
+13 |     && rm -rf /var/lib/apt/lists/*
+14 | 
+15 | RUN pip install markitdown
+16 | 
+17 | # Default USERID and GROUPID
+18 | ARG USERID=10000
+19 | ARG GROUPID=10000
+20 | 
+21 | USER $USERID:$GROUPID
+22 | 
+23 | ENTRYPOINT [ "markitdown" ]
+24 | 
+
+
+--------------------------------------------------------------------------------
+/LICENSE:
+--------------------------------------------------------------------------------
+ 1 |     MIT License
+ 2 | 
+ 3 |     Copyright (c) Microsoft Corporation.
+ 4 | 
+ 5 |     Permission is hereby granted, free of charge, to any person obtaining a copy
+ 6 |     of this software and associated documentation files (the "Software"), to deal
+ 7 |     in the Software without restriction, including without limitation the rights
+ 8 |     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ 9 |     copies of the Software, and to permit persons to whom the Software is
+10 |     furnished to do so, subject to the following conditions:
+11 | 
+12 |     The above copyright notice and this permission notice shall be included in all
+13 |     copies or substantial portions of the Software.
+14 | 
+15 |     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+16 |     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+17 |     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+18 |     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+19 |     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+20 |     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+21 |     SOFTWARE
+22 | 
+
+
+--------------------------------------------------------------------------------
+/README.md:
+--------------------------------------------------------------------------------
+  1 | # MarkItDown
+  2 | 
+  3 | [![PyPI](https://img.shields.io/pypi/v/markitdown.svg)](https://pypi.org/project/markitdown/)
+  4 | ![PyPI - Downloads](https://img.shields.io/pypi/dd/markitdown)
+  5 | [![Built by AutoGen Team](https://img.shields.io/badge/Built%20by-AutoGen%20Team-blue)](https://github.com/microsoft/autogen)
+  6 | 
+  7 | 
+  8 | MarkItDown is a utility for converting various files to Markdown (e.g., for indexing, text analysis, etc).
+  9 | It supports:
+ 10 | - PDF
+ 11 | - PowerPoint
+ 12 | - Word
+ 13 | - Excel
+ 14 | - Images (EXIF metadata and OCR)
+ 15 | - Audio (EXIF metadata and speech transcription)
+ 16 | - HTML
+ 17 | - Text-based formats (CSV, JSON, XML)
+ 18 | - ZIP files (iterates over contents)
+ 19 | 
+ 20 | To install MarkItDown, use pip: `pip install markitdown`. Alternatively, you can install it from the source: `pip install -e .`
+ 21 | 
+ 22 | ## Usage
+ 23 | 
+ 24 | ### Command-Line
+ 25 | 
+ 26 | ```bash
+ 27 | markitdown path-to-file.pdf > document.md
+ 28 | ```
+ 29 | 
+ 30 | Or use `-o` to specify the output file:
+ 31 | 
+ 32 | ```bash
+ 33 | markitdown path-to-file.pdf -o document.md
+ 34 | ```
+ 35 | 
+ 36 | You can also pipe content:
+ 37 | 
+ 38 | ```bash
+ 39 | cat path-to-file.pdf | markitdown
+ 40 | ```
+ 41 | 
+ 42 | ### Python API
+ 43 | 
+ 44 | Basic usage in Python:
+ 45 | 
+ 46 | ```python
+ 47 | from markitdown import MarkItDown
+ 48 | 
+ 49 | md = MarkItDown()
+ 50 | result = md.convert("test.xlsx")
+ 51 | print(result.text_content)
+ 52 | ```
+ 53 | 
+ 54 | To use Large Language Models for image descriptions, provide `llm_client` and `llm_model`:
+ 55 | 
+ 56 | ```python
+ 57 | from markitdown import MarkItDown
+ 58 | from openai import OpenAI
+ 59 | 
+ 60 | client = OpenAI()
+ 61 | md = MarkItDown(llm_client=client, llm_model="gpt-4o")
+ 62 | result = md.convert("example.jpg")
+ 63 | print(result.text_content)
+ 64 | ```
+ 65 | 
+ 66 | ### Docker
+ 67 | 
+ 68 | ```sh
+ 69 | docker build -t markitdown:latest .
+ 70 | docker run --rm -i markitdown:latest < ~/your-file.pdf > output.md
+ 71 | ```
+ 72 | <details>
+ 73 |     
+ 74 | <summary>Batch Processing Multiple Files</summary>
+ 75 | 
+ 76 | This example shows how to convert multiple files to markdown format in a single run. The script processes all supported files in a directory and creates corresponding markdown files.
+ 77 | 
+ 78 | 
+ 79 | ```python convert.py
+ 80 | from markitdown import MarkItDown
+ 81 | from openai import OpenAI
+ 82 | import os
+ 83 | client = OpenAI(api_key="your-api-key-here")
+ 84 | md = MarkItDown(llm_client=client, llm_model="gpt-4o-2024-11-20")
+ 85 | supported_extensions = ('.pptx', '.docx', '.pdf', '.jpg', '.jpeg', '.png')
+ 86 | files_to_convert = [f for f in os.listdir('.') if f.lower().endswith(supported_extensions)]
+ 87 | for file in files_to_convert:
+ 88 |     print(f"\nConverting {file}...")
+ 89 |     try:
+ 90 |         md_file = os.path.splitext(file)[0] + '.md'
+ 91 |         result = md.convert(file)
+ 92 |         with open(md_file, 'w') as f:
+ 93 |             f.write(result.text_content)
+ 94 |         
+ 95 |         print(f"Successfully converted {file} to {md_file}")
+ 96 |     except Exception as e:
+ 97 |         print(f"Error converting {file}: {str(e)}")
+ 98 | 
+ 99 | print("\nAll conversions completed!")
+100 | ```
+101 | 2. Place the script in the same directory as your files
+102 | 3. Install required packages: like openai
+103 | 4. Run script ```bash python convert.py ```
+104 | 
+105 | Note that original files will remain unchanged and new markdown files are created with the same base name.
+106 | 
+107 | </details>
+108 |    
+109 | ## Contributing
+110 | 
+111 | This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+112 | Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+113 | the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+114 | 
+115 | When you submit a pull request, a CLA bot will automatically determine whether you need to provide
+116 | a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+117 | provided by the bot. You will only need to do this once across all repos using our CLA.
+118 | 
+119 | This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+120 | For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+121 | contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+122 | 
+123 | ### How to Contribute
+124 | 
+125 | You can help by looking at issues or helping review PRs. Any issue or PR is welcome, but we have also marked some as 'open for contribution' and 'open for reviewing' to help facilitate community contributions. These are ofcourse just suggestions and you are welcome to contribute in any way you like.
+126 | 
+127 | 
+128 | <div align="center">
+129 | 
+130 | |                       | All                                      | Especially Needs Help from Community                                                                 |
+131 | |-----------------------|------------------------------------------|------------------------------------------------------------------------------------------|
+132 | | **Issues**            | [All Issues](https://github.com/microsoft/markitdown/issues) | [Issues open for contribution](https://github.com/microsoft/markitdown/issues?q=is%3Aissue+is%3Aopen+label%3A%22open+for+contribution%22) |
+133 | | **PRs**               | [All PRs](https://github.com/microsoft/markitdown/pulls)     | [PRs open for reviewing](https://github.com/microsoft/markitdown/pulls?q=is%3Apr+is%3Aopen+label%3A%22open+for+reviewing%22)               |
+134 | 
+135 | </div>
+136 | 
+137 | ### Running Tests and Checks
+138 | 
+139 | - Install `hatch` in your environment and run tests:
+140 |     ```sh
+141 |     pip install hatch  # Other ways of installing hatch: https://hatch.pypa.io/dev/install/
+142 |     hatch shell
+143 |     hatch test
+144 |     ```
+145 | 
+146 |   (Alternative) Use the Devcontainer which has all the dependencies installed:
+147 |     ```sh
+148 |     # Reopen the project in Devcontainer and run:
+149 |     hatch test
+150 |     ```
+151 | 
+152 | - Run pre-commit checks before submitting a PR: `pre-commit run --all-files`
+153 | 
+154 | ## Trademarks
+155 | 
+156 | This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+157 | trademarks or logos is subject to and must follow
+158 | [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+159 | Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
+160 | Any use of third-party trademarks or logos are subject to those third-party's policies.
+161 | 
+
+
+--------------------------------------------------------------------------------
+/SECURITY.md:
+--------------------------------------------------------------------------------
+ 1 | <!-- BEGIN MICROSOFT SECURITY.MD V0.0.9 BLOCK -->
+ 2 | 
+ 3 | ## Security
+ 4 | 
+ 5 | Microsoft takes the security of our software products and services seriously, which includes all source code repositories managed through our GitHub organizations, which include [Microsoft](https://github.com/Microsoft), [Azure](https://github.com/Azure), [DotNet](https://github.com/dotnet), [AspNet](https://github.com/aspnet) and [Xamarin](https://github.com/xamarin).
+ 6 | 
+ 7 | If you believe you have found a security vulnerability in any Microsoft-owned repository that meets [Microsoft's definition of a security vulnerability](https://aka.ms/security.md/definition), please report it to us as described below.
+ 8 | 
+ 9 | ## Reporting Security Issues
+10 | 
+11 | **Please do not report security vulnerabilities through public GitHub issues.**
+12 | 
+13 | Instead, please report them to the Microsoft Security Response Center (MSRC) at [https://msrc.microsoft.com/create-report](https://aka.ms/security.md/msrc/create-report).
+14 | 
+15 | If you prefer to submit without logging in, send email to [secure@microsoft.com](mailto:secure@microsoft.com).  If possible, encrypt your message with our PGP key; please download it from the [Microsoft Security Response Center PGP Key page](https://aka.ms/security.md/msrc/pgp).
+16 | 
+17 | You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message. Additional information can be found at [microsoft.com/msrc](https://www.microsoft.com/msrc). 
+18 | 
+19 | Please include the requested information listed below (as much as you can provide) to help us better understand the nature and scope of the possible issue:
+20 | 
+21 |   * Type of issue (e.g. buffer overflow, SQL injection, cross-site scripting, etc.)
+22 |   * Full paths of source file(s) related to the manifestation of the issue
+23 |   * The location of the affected source code (tag/branch/commit or direct URL)
+24 |   * Any special configuration required to reproduce the issue
+25 |   * Step-by-step instructions to reproduce the issue
+26 |   * Proof-of-concept or exploit code (if possible)
+27 |   * Impact of the issue, including how an attacker might exploit the issue
+28 | 
+29 | This information will help us triage your report more quickly.
+30 | 
+31 | If you are reporting for a bug bounty, more complete reports can contribute to a higher bounty award. Please visit our [Microsoft Bug Bounty Program](https://aka.ms/security.md/msrc/bounty) page for more details about our active programs.
+32 | 
+33 | ## Preferred Languages
+34 | 
+35 | We prefer all communications to be in English.
+36 | 
+37 | ## Policy
+38 | 
+39 | Microsoft follows the principle of [Coordinated Vulnerability Disclosure](https://aka.ms/security.md/cvd).
+40 | 
+41 | <!-- END MICROSOFT SECURITY.MD BLOCK -->
+42 | 
+
+
+--------------------------------------------------------------------------------
+/SUPPORT.md:
+--------------------------------------------------------------------------------
+ 1 | # TODO: The maintainer of this repo has not yet edited this file
+ 2 | 
+ 3 | **REPO OWNER**: Do you want Customer Service & Support (CSS) support for this product/project?
+ 4 | 
+ 5 | - **No CSS support:** Fill out this template with information about how to file issues and get help.
+ 6 | - **Yes CSS support:** Fill out an intake form at [aka.ms/onboardsupport](https://aka.ms/onboardsupport). CSS will work with/help you to determine next steps.
+ 7 | - **Not sure?** Fill out an intake as though the answer were "Yes". CSS will help you decide.
+ 8 | 
+ 9 | *Then remove this first heading from this SUPPORT.MD file before publishing your repo.*
+10 | 
+11 | # Support
+12 | 
+13 | ## How to file issues and get help  
+14 | 
+15 | This project uses GitHub Issues to track bugs and feature requests. Please search the existing 
+16 | issues before filing new issues to avoid duplicates.  For new issues, file your bug or 
+17 | feature request as a new Issue.
+18 | 
+19 | For help and questions about using this project, please **REPO MAINTAINER: INSERT INSTRUCTIONS HERE 
+20 | FOR HOW TO ENGAGE REPO OWNERS OR COMMUNITY FOR HELP. COULD BE A STACK OVERFLOW TAG OR OTHER
+21 | CHANNEL. WHERE WILL YOU HELP PEOPLE?**.
+22 | 
+23 | ## Microsoft Support Policy  
+24 | 
+25 | Support for this **PROJECT or PRODUCT** is limited to the resources listed above.
+26 | 
+
+
+--------------------------------------------------------------------------------
+/pyproject.toml:
+--------------------------------------------------------------------------------
+ 1 | [build-system]
+ 2 | requires = ["hatchling"]
+ 3 | build-backend = "hatchling.build"
+ 4 | 
+ 5 | [project]
+ 6 | name = "markitdown"
+ 7 | dynamic = ["version"]
+ 8 | description = 'Utility tool for converting various files to Markdown'
+ 9 | readme = "README.md"
+10 | requires-python = ">=3.10"
+11 | license = "MIT"
+12 | keywords = []
+13 | authors = [
+14 |   { name = "Adam Fourney", email = "adamfo@microsoft.com" },
+15 | ]
+16 | classifiers = [
+17 |   "Development Status :: 4 - Beta",
+18 |   "Programming Language :: Python",
+19 |   "Programming Language :: Python :: 3.10",
+20 |   "Programming Language :: Python :: 3.11",
+21 |   "Programming Language :: Python :: 3.12",
+22 |   "Programming Language :: Python :: 3.13",
+23 |   "Programming Language :: Python :: Implementation :: CPython",
+24 |   "Programming Language :: Python :: Implementation :: PyPy",
+25 | ]
+26 | dependencies = [
+27 |   "beautifulsoup4",
+28 |   "requests",
+29 |   "mammoth",
+30 |   "markdownify",
+31 |   "numpy",
+32 |   "python-pptx",
+33 |   "pandas",
+34 |   "openpyxl",
+35 |   "xlrd",
+36 |   "pdfminer.six",
+37 |   "puremagic",
+38 |   "pydub",
+39 |   "olefile",
+40 |   "youtube-transcript-api",
+41 |   "SpeechRecognition",
+42 |   "pathvalidate",
+43 |   "charset-normalizer",
+44 |   "openai",
+45 | ]
+46 | 
+47 | [project.urls]
+48 | Documentation = "https://github.com/microsoft/markitdown#readme"
+49 | Issues = "https://github.com/microsoft/markitdown/issues"
+50 | Source = "https://github.com/microsoft/markitdown"
+51 | 
+52 | [tool.hatch.version]
+53 | path = "src/markitdown/__about__.py"
+54 | 
+55 | [project.scripts]
+56 | markitdown = "markitdown.__main__:main"
+57 | 
+58 | [tool.hatch.envs.types]
+59 | extra-dependencies = [
+60 |   "mypy>=1.0.0",
+61 | ]
+62 | [tool.hatch.envs.types.scripts]
+63 | check = "mypy --install-types --non-interactive {args:src/markitdown tests}"
+64 | 
+65 | [tool.coverage.run]
+66 | source_pkgs = ["markitdown", "tests"]
+67 | branch = true
+68 | parallel = true
+69 | omit = [
+70 |   "src/markitdown/__about__.py",
+71 | ]
+72 | 
+73 | [tool.coverage.paths]
+74 | markitdown = ["src/markitdown", "*/markitdown/src/markitdown"]
+75 | tests = ["tests", "*/markitdown/tests"]
+76 | 
+77 | [tool.coverage.report]
+78 | exclude_lines = [
+79 |   "no cov",
+80 |   "if __name__ == .__main__.:",
+81 |   "if TYPE_CHECKING:",
+82 | ]
+83 | 
+84 | [tool.hatch.build.targets.sdist]
+85 | only-include = ["src/markitdown"]
+86 | 
+
+
+--------------------------------------------------------------------------------
+/src/markitdown/__about__.py:
+--------------------------------------------------------------------------------
+1 | # SPDX-FileCopyrightText: 2024-present Adam Fourney <adamfo@microsoft.com>
+2 | #
+3 | # SPDX-License-Identifier: MIT
+4 | __version__ = "0.0.1a3"
+5 | 
+
+
+--------------------------------------------------------------------------------
+/src/markitdown/__init__.py:
+--------------------------------------------------------------------------------
+ 1 | # SPDX-FileCopyrightText: 2024-present Adam Fourney <adamfo@microsoft.com>
+ 2 | #
+ 3 | # SPDX-License-Identifier: MIT
+ 4 | 
+ 5 | from ._markitdown import MarkItDown, FileConversionException, UnsupportedFormatException
+ 6 | 
+ 7 | __all__ = [
+ 8 |     "MarkItDown",
+ 9 |     "FileConversionException",
+10 |     "UnsupportedFormatException",
+11 | ]
+12 | 
+
+
+--------------------------------------------------------------------------------
+/src/markitdown/__main__.py:
+--------------------------------------------------------------------------------
+ 1 | # SPDX-FileCopyrightText: 2024-present Adam Fourney <adamfo@microsoft.com>
+ 2 | #
+ 3 | # SPDX-License-Identifier: MIT
+ 4 | import argparse
+ 5 | import sys
+ 6 | from textwrap import dedent
+ 7 | from .__about__ import __version__
+ 8 | from ._markitdown import MarkItDown, DocumentConverterResult
+ 9 | 
+10 | 
+11 | def main():
+12 |     parser = argparse.ArgumentParser(
+13 |         description="Convert various file formats to markdown.",
+14 |         prog="markitdown",
+15 |         formatter_class=argparse.RawDescriptionHelpFormatter,
+16 |         usage=dedent(
+17 |             """
+18 |             SYNTAX:
+19 | 
+20 |                 markitdown <OPTIONAL: FILENAME>
+21 |                 If FILENAME is empty, markitdown reads from stdin.
+22 | 
+23 |             EXAMPLE:
+24 | 
+25 |                 markitdown example.pdf
+26 | 
+27 |                 OR
+28 | 
+29 |                 cat example.pdf | markitdown
+30 | 
+31 |                 OR
+32 | 
+33 |                 markitdown < example.pdf
+34 |                 
+35 |                 OR to save to a file use
+36 |     
+37 |                 markitdown example.pdf -o example.md
+38 |                 
+39 |                 OR
+40 |                 
+41 |                 markitdown example.pdf > example.md
+42 |             """
+43 |         ).strip(),
+44 |     )
+45 | 
+46 |     parser.add_argument(
+47 |         "-v",
+48 |         "--version",
+49 |         action="version",
+50 |         version=f"%(prog)s {__version__}",
+51 |         help="show the version number and exit",
+52 |     )
+53 | 
+54 |     parser.add_argument("filename", nargs="?")
+55 |     parser.add_argument(
+56 |         "-o",
+57 |         "--output",
+58 |         help="Output file name. If not provided, output is written to stdout.",
+59 |     )
+60 |     args = parser.parse_args()
+61 | 
+62 |     if args.filename is None:
+63 |         markitdown = MarkItDown()
+64 |         result = markitdown.convert_stream(sys.stdin.buffer)
+65 |         _handle_output(args, result)
+66 |     else:
+67 |         markitdown = MarkItDown()
+68 |         result = markitdown.convert(args.filename)
+69 |         _handle_output(args, result)
+70 | 
+71 | 
+72 | def _handle_output(args, result: DocumentConverterResult):
+73 |     """Handle output to stdout or file"""
+74 |     if args.output:
+75 |         with open(args.output, "w", encoding="utf-8") as f:
+76 |             f.write(result.text_content)
+77 |     else:
+78 |         print(result.text_content)
+79 | 
+80 | 
+81 | if __name__ == "__main__":
+82 |     main()
+83 | 
+
+
+--------------------------------------------------------------------------------
+/src/markitdown/_markitdown.py:
+--------------------------------------------------------------------------------
+   1 | # type: ignore
+   2 | import base64
+   3 | import binascii
+   4 | import copy
+   5 | import html
+   6 | import json
+   7 | import mimetypes
+   8 | import os
+   9 | import re
+  10 | import shutil
+  11 | import subprocess
+  12 | import sys
+  13 | import tempfile
+  14 | import traceback
+  15 | import zipfile
+  16 | from xml.dom import minidom
+  17 | from typing import Any, Dict, List, Optional, Union
+  18 | from pathlib import Path
+  19 | from urllib.parse import parse_qs, quote, unquote, urlparse, urlunparse
+  20 | from warnings import warn, resetwarnings, catch_warnings
+  21 | 
+  22 | import mammoth
+  23 | import markdownify
+  24 | import olefile
+  25 | import pandas as pd
+  26 | import pdfminer
+  27 | import pdfminer.high_level
+  28 | import pptx
+  29 | 
+  30 | # File-format detection
+  31 | import puremagic
+  32 | import requests
+  33 | from bs4 import BeautifulSoup
+  34 | from charset_normalizer import from_path
+  35 | 
+  36 | # Optional Transcription support
+  37 | IS_AUDIO_TRANSCRIPTION_CAPABLE = False
+  38 | try:
+  39 |     # Using warnings' catch_warnings to catch
+  40 |     # pydub's warning of ffmpeg or avconv missing
+  41 |     with catch_warnings(record=True) as w:
+  42 |         import pydub
+  43 | 
+  44 |         if w:
+  45 |             raise ModuleNotFoundError
+  46 |     import speech_recognition as sr
+  47 | 
+  48 |     IS_AUDIO_TRANSCRIPTION_CAPABLE = True
+  49 | except ModuleNotFoundError:
+  50 |     pass
+  51 | finally:
+  52 |     resetwarnings()
+  53 | 
+  54 | # Optional YouTube transcription support
+  55 | try:
+  56 |     from youtube_transcript_api import YouTubeTranscriptApi
+  57 | 
+  58 |     IS_YOUTUBE_TRANSCRIPT_CAPABLE = True
+  59 | except ModuleNotFoundError:
+  60 |     pass
+  61 | 
+  62 | 
+  63 | class _CustomMarkdownify(markdownify.MarkdownConverter):
+  64 |     """
+  65 |     A custom version of markdownify's MarkdownConverter. Changes include:
+  66 | 
+  67 |     - Altering the default heading style to use '#', '##', etc.
+  68 |     - Removing javascript hyperlinks.
+  69 |     - Truncating images with large data:uri sources.
+  70 |     - Ensuring URIs are properly escaped, and do not conflict with Markdown syntax
+  71 |     """
+  72 | 
+  73 |     def __init__(self, **options: Any):
+  74 |         options["heading_style"] = options.get("heading_style", markdownify.ATX)
+  75 |         # Explicitly cast options to the expected type if necessary
+  76 |         super().__init__(**options)
+  77 | 
+  78 |     def convert_hn(self, n: int, el: Any, text: str, convert_as_inline: bool) -> str:
+  79 |         """Same as usual, but be sure to start with a new line"""
+  80 |         if not convert_as_inline:
+  81 |             if not re.search(r"^\n", text):
+  82 |                 return "\n" + super().convert_hn(n, el, text, convert_as_inline)  # type: ignore
+  83 | 
+  84 |         return super().convert_hn(n, el, text, convert_as_inline)  # type: ignore
+  85 | 
+  86 |     def convert_a(self, el: Any, text: str, convert_as_inline: bool):
+  87 |         """Same as usual converter, but removes Javascript links and escapes URIs."""
+  88 |         prefix, suffix, text = markdownify.chomp(text)  # type: ignore
+  89 |         if not text:
+  90 |             return ""
+  91 |         href = el.get("href")
+  92 |         title = el.get("title")
+  93 | 
+  94 |         # Escape URIs and skip non-http or file schemes
+  95 |         if href:
+  96 |             try:
+  97 |                 parsed_url = urlparse(href)  # type: ignore
+  98 |                 if parsed_url.scheme and parsed_url.scheme.lower() not in ["http", "https", "file"]:  # type: ignore
+  99 |                     return "%s%s%s" % (prefix, text, suffix)
+ 100 |                 href = urlunparse(parsed_url._replace(path=quote(unquote(parsed_url.path))))  # type: ignore
+ 101 |             except ValueError:  # It's not clear if this ever gets thrown
+ 102 |                 return "%s%s%s" % (prefix, text, suffix)
+ 103 | 
+ 104 |         # For the replacement see #29: text nodes underscores are escaped
+ 105 |         if (
+ 106 |             self.options["autolinks"]
+ 107 |             and text.replace(r"\_", "_") == href
+ 108 |             and not title
+ 109 |             and not self.options["default_title"]
+ 110 |         ):
+ 111 |             # Shortcut syntax
+ 112 |             return "<%s>" % href
+ 113 |         if self.options["default_title"] and not title:
+ 114 |             title = href
+ 115 |         title_part = ' "%s"' % title.replace('"', r"\"") if title else ""
+ 116 |         return (
+ 117 |             "%s[%s](%s%s)%s" % (prefix, text, href, title_part, suffix)
+ 118 |             if href
+ 119 |             else text
+ 120 |         )
+ 121 | 
+ 122 |     def convert_img(self, el: Any, text: str, convert_as_inline: bool) -> str:
+ 123 |         """Same as usual converter, but removes data URIs"""
+ 124 | 
+ 125 |         alt = el.attrs.get("alt", None) or ""
+ 126 |         src = el.attrs.get("src", None) or ""
+ 127 |         title = el.attrs.get("title", None) or ""
+ 128 |         title_part = ' "%s"' % title.replace('"', r"\"") if title else ""
+ 129 |         if (
+ 130 |             convert_as_inline
+ 131 |             and el.parent.name not in self.options["keep_inline_images_in"]
+ 132 |         ):
+ 133 |             return alt
+ 134 | 
+ 135 |         # Remove dataURIs
+ 136 |         if src.startswith("data:"):
+ 137 |             src = src.split(",")[0] + "..."
+ 138 | 
+ 139 |         return "![%s](%s%s)" % (alt, src, title_part)
+ 140 | 
+ 141 |     def convert_soup(self, soup: Any) -> str:
+ 142 |         return super().convert_soup(soup)  # type: ignore
+ 143 | 
+ 144 | 
+ 145 | class DocumentConverterResult:
+ 146 |     """The result of converting a document to text."""
+ 147 | 
+ 148 |     def __init__(self, title: Union[str, None] = None, text_content: str = ""):
+ 149 |         self.title: Union[str, None] = title
+ 150 |         self.text_content: str = text_content
+ 151 | 
+ 152 | 
+ 153 | class DocumentConverter:
+ 154 |     """Abstract superclass of all DocumentConverters."""
+ 155 | 
+ 156 |     def convert(
+ 157 |         self, local_path: str, **kwargs: Any
+ 158 |     ) -> Union[None, DocumentConverterResult]:
+ 159 |         raise NotImplementedError()
+ 160 | 
+ 161 | 
+ 162 | class PlainTextConverter(DocumentConverter):
+ 163 |     """Anything with content type text/plain"""
+ 164 | 
+ 165 |     def convert(
+ 166 |         self, local_path: str, **kwargs: Any
+ 167 |     ) -> Union[None, DocumentConverterResult]:
+ 168 |         # Guess the content type from any file extension that might be around
+ 169 |         content_type, _ = mimetypes.guess_type(
+ 170 |             "__placeholder" + kwargs.get("file_extension", "")
+ 171 |         )
+ 172 | 
+ 173 |         # Only accept text files
+ 174 |         if content_type is None:
+ 175 |             return None
+ 176 |         elif all(
+ 177 |             not content_type.lower().startswith(type_prefix)
+ 178 |             for type_prefix in ["text/", "application/json"]
+ 179 |         ):
+ 180 |             return None
+ 181 | 
+ 182 |         text_content = str(from_path(local_path).best())
+ 183 |         return DocumentConverterResult(
+ 184 |             title=None,
+ 185 |             text_content=text_content,
+ 186 |         )
+ 187 | 
+ 188 | 
+ 189 | class HtmlConverter(DocumentConverter):
+ 190 |     """Anything with content type text/html"""
+ 191 | 
+ 192 |     def convert(
+ 193 |         self, local_path: str, **kwargs: Any
+ 194 |     ) -> Union[None, DocumentConverterResult]:
+ 195 |         # Bail if not html
+ 196 |         extension = kwargs.get("file_extension", "")
+ 197 |         if extension.lower() not in [".html", ".htm"]:
+ 198 |             return None
+ 199 | 
+ 200 |         result = None
+ 201 |         with open(local_path, "rt", encoding="utf-8") as fh:
+ 202 |             result = self._convert(fh.read())
+ 203 | 
+ 204 |         return result
+ 205 | 
+ 206 |     def _convert(self, html_content: str) -> Union[None, DocumentConverterResult]:
+ 207 |         """Helper function that converts and HTML string."""
+ 208 | 
+ 209 |         # Parse the string
+ 210 |         soup = BeautifulSoup(html_content, "html.parser")
+ 211 | 
+ 212 |         # Remove javascript and style blocks
+ 213 |         for script in soup(["script", "style"]):
+ 214 |             script.extract()
+ 215 | 
+ 216 |         # Print only the main content
+ 217 |         body_elm = soup.find("body")
+ 218 |         webpage_text = ""
+ 219 |         if body_elm:
+ 220 |             webpage_text = _CustomMarkdownify().convert_soup(body_elm)
+ 221 |         else:
+ 222 |             webpage_text = _CustomMarkdownify().convert_soup(soup)
+ 223 | 
+ 224 |         assert isinstance(webpage_text, str)
+ 225 | 
+ 226 |         return DocumentConverterResult(
+ 227 |             title=None if soup.title is None else soup.title.string,
+ 228 |             text_content=webpage_text,
+ 229 |         )
+ 230 | 
+ 231 | 
+ 232 | class RSSConverter(DocumentConverter):
+ 233 |     """Convert RSS / Atom type to markdown"""
+ 234 | 
+ 235 |     def convert(
+ 236 |         self, local_path: str, **kwargs
+ 237 |     ) -> Union[None, DocumentConverterResult]:
+ 238 |         # Bail if not RSS type
+ 239 |         extension = kwargs.get("file_extension", "")
+ 240 |         if extension.lower() not in [".xml", ".rss", ".atom"]:
+ 241 |             return None
+ 242 |         try:
+ 243 |             doc = minidom.parse(local_path)
+ 244 |         except BaseException as _:
+ 245 |             return None
+ 246 |         result = None
+ 247 |         if doc.getElementsByTagName("rss"):
+ 248 |             # A RSS feed must have a root element of <rss>
+ 249 |             result = self._parse_rss_type(doc)
+ 250 |         elif doc.getElementsByTagName("feed"):
+ 251 |             root = doc.getElementsByTagName("feed")[0]
+ 252 |             if root.getElementsByTagName("entry"):
+ 253 |                 # An Atom feed must have a root element of <feed> and at least one <entry>
+ 254 |                 result = self._parse_atom_type(doc)
+ 255 |             else:
+ 256 |                 return None
+ 257 |         else:
+ 258 |             # not rss or atom
+ 259 |             return None
+ 260 | 
+ 261 |         return result
+ 262 | 
+ 263 |     def _parse_atom_type(
+ 264 |         self, doc: minidom.Document
+ 265 |     ) -> Union[None, DocumentConverterResult]:
+ 266 |         """Parse the type of an Atom feed.
+ 267 | 
+ 268 |         Returns None if the feed type is not recognized or something goes wrong.
+ 269 |         """
+ 270 |         try:
+ 271 |             root = doc.getElementsByTagName("feed")[0]
+ 272 |             title = self._get_data_by_tag_name(root, "title")
+ 273 |             subtitle = self._get_data_by_tag_name(root, "subtitle")
+ 274 |             entries = root.getElementsByTagName("entry")
+ 275 |             md_text = f"# {title}\n"
+ 276 |             if subtitle:
+ 277 |                 md_text += f"{subtitle}\n"
+ 278 |             for entry in entries:
+ 279 |                 entry_title = self._get_data_by_tag_name(entry, "title")
+ 280 |                 entry_summary = self._get_data_by_tag_name(entry, "summary")
+ 281 |                 entry_updated = self._get_data_by_tag_name(entry, "updated")
+ 282 |                 entry_content = self._get_data_by_tag_name(entry, "content")
+ 283 | 
+ 284 |                 if entry_title:
+ 285 |                     md_text += f"\n## {entry_title}\n"
+ 286 |                 if entry_updated:
+ 287 |                     md_text += f"Updated on: {entry_updated}\n"
+ 288 |                 if entry_summary:
+ 289 |                     md_text += self._parse_content(entry_summary)
+ 290 |                 if entry_content:
+ 291 |                     md_text += self._parse_content(entry_content)
+ 292 | 
+ 293 |             return DocumentConverterResult(
+ 294 |                 title=title,
+ 295 |                 text_content=md_text,
+ 296 |             )
+ 297 |         except BaseException as _:
+ 298 |             return None
+ 299 | 
+ 300 |     def _parse_rss_type(
+ 301 |         self, doc: minidom.Document
+ 302 |     ) -> Union[None, DocumentConverterResult]:
+ 303 |         """Parse the type of an RSS feed.
+ 304 | 
+ 305 |         Returns None if the feed type is not recognized or something goes wrong.
+ 306 |         """
+ 307 |         try:
+ 308 |             root = doc.getElementsByTagName("rss")[0]
+ 309 |             channel = root.getElementsByTagName("channel")
+ 310 |             if not channel:
+ 311 |                 return None
+ 312 |             channel = channel[0]
+ 313 |             channel_title = self._get_data_by_tag_name(channel, "title")
+ 314 |             channel_description = self._get_data_by_tag_name(channel, "description")
+ 315 |             items = channel.getElementsByTagName("item")
+ 316 |             if channel_title:
+ 317 |                 md_text = f"# {channel_title}\n"
+ 318 |             if channel_description:
+ 319 |                 md_text += f"{channel_description}\n"
+ 320 |             if not items:
+ 321 |                 items = []
+ 322 |             for item in items:
+ 323 |                 title = self._get_data_by_tag_name(item, "title")
+ 324 |                 description = self._get_data_by_tag_name(item, "description")
+ 325 |                 pubDate = self._get_data_by_tag_name(item, "pubDate")
+ 326 |                 content = self._get_data_by_tag_name(item, "content:encoded")
+ 327 | 
+ 328 |                 if title:
+ 329 |                     md_text += f"\n## {title}\n"
+ 330 |                 if pubDate:
+ 331 |                     md_text += f"Published on: {pubDate}\n"
+ 332 |                 if description:
+ 333 |                     md_text += self._parse_content(description)
+ 334 |                 if content:
+ 335 |                     md_text += self._parse_content(content)
+ 336 | 
+ 337 |             return DocumentConverterResult(
+ 338 |                 title=channel_title,
+ 339 |                 text_content=md_text,
+ 340 |             )
+ 341 |         except BaseException as _:
+ 342 |             print(traceback.format_exc())
+ 343 |             return None
+ 344 | 
+ 345 |     def _parse_content(self, content: str) -> str:
+ 346 |         """Parse the content of an RSS feed item"""
+ 347 |         try:
+ 348 |             # using bs4 because many RSS feeds have HTML-styled content
+ 349 |             soup = BeautifulSoup(content, "html.parser")
+ 350 |             return _CustomMarkdownify().convert_soup(soup)
+ 351 |         except BaseException as _:
+ 352 |             return content
+ 353 | 
+ 354 |     def _get_data_by_tag_name(
+ 355 |         self, element: minidom.Element, tag_name: str
+ 356 |     ) -> Union[str, None]:
+ 357 |         """Get data from first child element with the given tag name.
+ 358 |         Returns None when no such element is found.
+ 359 |         """
+ 360 |         nodes = element.getElementsByTagName(tag_name)
+ 361 |         if not nodes:
+ 362 |             return None
+ 363 |         fc = nodes[0].firstChild
+ 364 |         if fc:
+ 365 |             return fc.data
+ 366 |         return None
+ 367 | 
+ 368 | 
+ 369 | class WikipediaConverter(DocumentConverter):
+ 370 |     """Handle Wikipedia pages separately, focusing only on the main document content."""
+ 371 | 
+ 372 |     def convert(
+ 373 |         self, local_path: str, **kwargs: Any
+ 374 |     ) -> Union[None, DocumentConverterResult]:
+ 375 |         # Bail if not Wikipedia
+ 376 |         extension = kwargs.get("file_extension", "")
+ 377 |         if extension.lower() not in [".html", ".htm"]:
+ 378 |             return None
+ 379 |         url = kwargs.get("url", "")
+ 380 |         if not re.search(r"^https?:\/\/[a-zA-Z]{2,3}\.wikipedia.org\/", url):
+ 381 |             return None
+ 382 | 
+ 383 |         # Parse the file
+ 384 |         soup = None
+ 385 |         with open(local_path, "rt", encoding="utf-8") as fh:
+ 386 |             soup = BeautifulSoup(fh.read(), "html.parser")
+ 387 | 
+ 388 |         # Remove javascript and style blocks
+ 389 |         for script in soup(["script", "style"]):
+ 390 |             script.extract()
+ 391 | 
+ 392 |         # Print only the main content
+ 393 |         body_elm = soup.find("div", {"id": "mw-content-text"})
+ 394 |         title_elm = soup.find("span", {"class": "mw-page-title-main"})
+ 395 | 
+ 396 |         webpage_text = ""
+ 397 |         main_title = None if soup.title is None else soup.title.string
+ 398 | 
+ 399 |         if body_elm:
+ 400 |             # What's the title
+ 401 |             if title_elm and len(title_elm) > 0:
+ 402 |                 main_title = title_elm.string  # type: ignore
+ 403 |                 assert isinstance(main_title, str)
+ 404 | 
+ 405 |             # Convert the page
+ 406 |             webpage_text = f"# {main_title}\n\n" + _CustomMarkdownify().convert_soup(
+ 407 |                 body_elm
+ 408 |             )
+ 409 |         else:
+ 410 |             webpage_text = _CustomMarkdownify().convert_soup(soup)
+ 411 | 
+ 412 |         return DocumentConverterResult(
+ 413 |             title=main_title,
+ 414 |             text_content=webpage_text,
+ 415 |         )
+ 416 | 
+ 417 | 
+ 418 | class YouTubeConverter(DocumentConverter):
+ 419 |     """Handle YouTube specially, focusing on the video title, description, and transcript."""
+ 420 | 
+ 421 |     def convert(
+ 422 |         self, local_path: str, **kwargs: Any
+ 423 |     ) -> Union[None, DocumentConverterResult]:
+ 424 |         # Bail if not YouTube
+ 425 |         extension = kwargs.get("file_extension", "")
+ 426 |         if extension.lower() not in [".html", ".htm"]:
+ 427 |             return None
+ 428 |         url = kwargs.get("url", "")
+ 429 |         if not url.startswith("https://www.youtube.com/watch?"):
+ 430 |             return None
+ 431 | 
+ 432 |         # Parse the file
+ 433 |         soup = None
+ 434 |         with open(local_path, "rt", encoding="utf-8") as fh:
+ 435 |             soup = BeautifulSoup(fh.read(), "html.parser")
+ 436 | 
+ 437 |         # Read the meta tags
+ 438 |         assert soup.title is not None and soup.title.string is not None
+ 439 |         metadata: Dict[str, str] = {"title": soup.title.string}
+ 440 |         for meta in soup(["meta"]):
+ 441 |             for a in meta.attrs:
+ 442 |                 if a in ["itemprop", "property", "name"]:
+ 443 |                     metadata[meta[a]] = meta.get("content", "")
+ 444 |                     break
+ 445 | 
+ 446 |         # We can also try to read the full description. This is more prone to breaking, since it reaches into the page implementation
+ 447 |         try:
+ 448 |             for script in soup(["script"]):
+ 449 |                 content = script.text
+ 450 |                 if "ytInitialData" in content:
+ 451 |                     lines = re.split(r"\r?\n", content)
+ 452 |                     obj_start = lines[0].find("{")
+ 453 |                     obj_end = lines[0].rfind("}")
+ 454 |                     if obj_start >= 0 and obj_end >= 0:
+ 455 |                         data = json.loads(lines[0][obj_start : obj_end + 1])
+ 456 |                         attrdesc = self._findKey(data, "attributedDescriptionBodyText")  # type: ignore
+ 457 |                         if attrdesc:
+ 458 |                             metadata["description"] = str(attrdesc["content"])
+ 459 |                     break
+ 460 |         except Exception:
+ 461 |             pass
+ 462 | 
+ 463 |         # Start preparing the page
+ 464 |         webpage_text = "# YouTube\n"
+ 465 | 
+ 466 |         title = self._get(metadata, ["title", "og:title", "name"])  # type: ignore
+ 467 |         assert isinstance(title, str)
+ 468 | 
+ 469 |         if title:
+ 470 |             webpage_text += f"\n## {title}\n"
+ 471 | 
+ 472 |         stats = ""
+ 473 |         views = self._get(metadata, ["interactionCount"])  # type: ignore
+ 474 |         if views:
+ 475 |             stats += f"- **Views:** {views}\n"
+ 476 | 
+ 477 |         keywords = self._get(metadata, ["keywords"])  # type: ignore
+ 478 |         if keywords:
+ 479 |             stats += f"- **Keywords:** {keywords}\n"
+ 480 | 
+ 481 |         runtime = self._get(metadata, ["duration"])  # type: ignore
+ 482 |         if runtime:
+ 483 |             stats += f"- **Runtime:** {runtime}\n"
+ 484 | 
+ 485 |         if len(stats) > 0:
+ 486 |             webpage_text += f"\n### Video Metadata\n{stats}\n"
+ 487 | 
+ 488 |         description = self._get(metadata, ["description", "og:description"])  # type: ignore
+ 489 |         if description:
+ 490 |             webpage_text += f"\n### Description\n{description}\n"
+ 491 | 
+ 492 |         if IS_YOUTUBE_TRANSCRIPT_CAPABLE:
+ 493 |             transcript_text = ""
+ 494 |             parsed_url = urlparse(url)  # type: ignore
+ 495 |             params = parse_qs(parsed_url.query)  # type: ignore
+ 496 |             if "v" in params:
+ 497 |                 assert isinstance(params["v"][0], str)
+ 498 |                 video_id = str(params["v"][0])
+ 499 |                 try:
+ 500 |                     youtube_transcript_languages = kwargs.get(
+ 501 |                         "youtube_transcript_languages", ("en",)
+ 502 |                     )
+ 503 |                     # Must be a single transcript.
+ 504 |                     transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=youtube_transcript_languages)  # type: ignore
+ 505 |                     transcript_text = " ".join([part["text"] for part in transcript])  # type: ignore
+ 506 |                     # Alternative formatting:
+ 507 |                     # formatter = TextFormatter()
+ 508 |                     # formatter.format_transcript(transcript)
+ 509 |                 except Exception:
+ 510 |                     pass
+ 511 |             if transcript_text:
+ 512 |                 webpage_text += f"\n### Transcript\n{transcript_text}\n"
+ 513 | 
+ 514 |         title = title if title else soup.title.string
+ 515 |         assert isinstance(title, str)
+ 516 | 
+ 517 |         return DocumentConverterResult(
+ 518 |             title=title,
+ 519 |             text_content=webpage_text,
+ 520 |         )
+ 521 | 
+ 522 |     def _get(
+ 523 |         self,
+ 524 |         metadata: Dict[str, str],
+ 525 |         keys: List[str],
+ 526 |         default: Union[str, None] = None,
+ 527 |     ) -> Union[str, None]:
+ 528 |         for k in keys:
+ 529 |             if k in metadata:
+ 530 |                 return metadata[k]
+ 531 |         return default
+ 532 | 
+ 533 |     def _findKey(self, json: Any, key: str) -> Union[str, None]:  # TODO: Fix json type
+ 534 |         if isinstance(json, list):
+ 535 |             for elm in json:
+ 536 |                 ret = self._findKey(elm, key)
+ 537 |                 if ret is not None:
+ 538 |                     return ret
+ 539 |         elif isinstance(json, dict):
+ 540 |             for k in json:
+ 541 |                 if k == key:
+ 542 |                     return json[k]
+ 543 |                 else:
+ 544 |                     ret = self._findKey(json[k], key)
+ 545 |                     if ret is not None:
+ 546 |                         return ret
+ 547 |         return None
+ 548 | 
+ 549 | 
+ 550 | class IpynbConverter(DocumentConverter):
+ 551 |     """Converts Jupyter Notebook (.ipynb) files to Markdown."""
+ 552 | 
+ 553 |     def convert(
+ 554 |         self, local_path: str, **kwargs: Any
+ 555 |     ) -> Union[None, DocumentConverterResult]:
+ 556 |         # Bail if not ipynb
+ 557 |         extension = kwargs.get("file_extension", "")
+ 558 |         if extension.lower() != ".ipynb":
+ 559 |             return None
+ 560 | 
+ 561 |         # Parse and convert the notebook
+ 562 |         result = None
+ 563 |         with open(local_path, "rt", encoding="utf-8") as fh:
+ 564 |             notebook_content = json.load(fh)
+ 565 |             result = self._convert(notebook_content)
+ 566 | 
+ 567 |         return result
+ 568 | 
+ 569 |     def _convert(self, notebook_content: dict) -> Union[None, DocumentConverterResult]:
+ 570 |         """Helper function that converts notebook JSON content to Markdown."""
+ 571 |         try:
+ 572 |             md_output = []
+ 573 |             title = None
+ 574 | 
+ 575 |             for cell in notebook_content.get("cells", []):
+ 576 |                 cell_type = cell.get("cell_type", "")
+ 577 |                 source_lines = cell.get("source", [])
+ 578 | 
+ 579 |                 if cell_type == "markdown":
+ 580 |                     md_output.append("".join(source_lines))
+ 581 | 
+ 582 |                     # Extract the first # heading as title if not already found
+ 583 |                     if title is None:
+ 584 |                         for line in source_lines:
+ 585 |                             if line.startswith("# "):
+ 586 |                                 title = line.lstrip("# ").strip()
+ 587 |                                 break
+ 588 | 
+ 589 |                 elif cell_type == "code":
+ 590 |                     # Code cells are wrapped in Markdown code blocks
+ 591 |                     md_output.append(f"```python\n{''.join(source_lines)}\n```")
+ 592 |                 elif cell_type == "raw":
+ 593 |                     md_output.append(f"```\n{''.join(source_lines)}\n```")
+ 594 | 
+ 595 |             md_text = "\n\n".join(md_output)
+ 596 | 
+ 597 |             # Check for title in notebook metadata
+ 598 |             title = notebook_content.get("metadata", {}).get("title", title)
+ 599 | 
+ 600 |             return DocumentConverterResult(
+ 601 |                 title=title,
+ 602 |                 text_content=md_text,
+ 603 |             )
+ 604 | 
+ 605 |         except Exception as e:
+ 606 |             raise FileConversionException(
+ 607 |                 f"Error converting .ipynb file: {str(e)}"
+ 608 |             ) from e
+ 609 | 
+ 610 | 
+ 611 | class BingSerpConverter(DocumentConverter):
+ 612 |     """
+ 613 |     Handle Bing results pages (only the organic search results).
+ 614 |     NOTE: It is better to use the Bing API
+ 615 |     """
+ 616 | 
+ 617 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 618 |         # Bail if not a Bing SERP
+ 619 |         extension = kwargs.get("file_extension", "")
+ 620 |         if extension.lower() not in [".html", ".htm"]:
+ 621 |             return None
+ 622 |         url = kwargs.get("url", "")
+ 623 |         if not re.search(r"^https://www\.bing\.com/search\?q=", url):
+ 624 |             return None
+ 625 | 
+ 626 |         # Parse the query parameters
+ 627 |         parsed_params = parse_qs(urlparse(url).query)
+ 628 |         query = parsed_params.get("q", [""])[0]
+ 629 | 
+ 630 |         # Parse the file
+ 631 |         soup = None
+ 632 |         with open(local_path, "rt", encoding="utf-8") as fh:
+ 633 |             soup = BeautifulSoup(fh.read(), "html.parser")
+ 634 | 
+ 635 |         # Clean up some formatting
+ 636 |         for tptt in soup.find_all(class_="tptt"):
+ 637 |             if hasattr(tptt, "string") and tptt.string:
+ 638 |                 tptt.string += " "
+ 639 |         for slug in soup.find_all(class_="algoSlug_icon"):
+ 640 |             slug.extract()
+ 641 | 
+ 642 |         # Parse the algorithmic results
+ 643 |         _markdownify = _CustomMarkdownify()
+ 644 |         results = list()
+ 645 |         for result in soup.find_all(class_="b_algo"):
+ 646 |             # Rewrite redirect urls
+ 647 |             for a in result.find_all("a", href=True):
+ 648 |                 parsed_href = urlparse(a["href"])
+ 649 |                 qs = parse_qs(parsed_href.query)
+ 650 | 
+ 651 |                 # The destination is contained in the u parameter,
+ 652 |                 # but appears to be base64 encoded, with some prefix
+ 653 |                 if "u" in qs:
+ 654 |                     u = (
+ 655 |                         qs["u"][0][2:].strip() + "=="
+ 656 |                     )  # Python 3 doesn't care about extra padding
+ 657 | 
+ 658 |                     try:
+ 659 |                         # RFC 4648 / Base64URL" variant, which uses "-" and "_"
+ 660 |                         a["href"] = base64.b64decode(u, altchars="-_").decode("utf-8")
+ 661 |                     except UnicodeDecodeError:
+ 662 |                         pass
+ 663 |                     except binascii.Error:
+ 664 |                         pass
+ 665 | 
+ 666 |             # Convert to markdown
+ 667 |             md_result = _markdownify.convert_soup(result).strip()
+ 668 |             lines = [line.strip() for line in re.split(r"\n+", md_result)]
+ 669 |             results.append("\n".join([line for line in lines if len(line) > 0]))
+ 670 | 
+ 671 |         webpage_text = (
+ 672 |             f"## A Bing search for '{query}' found the following results:\n\n"
+ 673 |             + "\n\n".join(results)
+ 674 |         )
+ 675 | 
+ 676 |         return DocumentConverterResult(
+ 677 |             title=None if soup.title is None else soup.title.string,
+ 678 |             text_content=webpage_text,
+ 679 |         )
+ 680 | 
+ 681 | 
+ 682 | class PdfConverter(DocumentConverter):
+ 683 |     """
+ 684 |     Converts PDFs to Markdown. Most style information is ignored, so the results are essentially plain-text.
+ 685 |     """
+ 686 | 
+ 687 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 688 |         # Bail if not a PDF
+ 689 |         extension = kwargs.get("file_extension", "")
+ 690 |         if extension.lower() != ".pdf":
+ 691 |             return None
+ 692 | 
+ 693 |         return DocumentConverterResult(
+ 694 |             title=None,
+ 695 |             text_content=pdfminer.high_level.extract_text(local_path),
+ 696 |         )
+ 697 | 
+ 698 | 
+ 699 | class DocxConverter(HtmlConverter):
+ 700 |     """
+ 701 |     Converts DOCX files to Markdown. Style information (e.g.m headings) and tables are preserved where possible.
+ 702 |     """
+ 703 | 
+ 704 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 705 |         # Bail if not a DOCX
+ 706 |         extension = kwargs.get("file_extension", "")
+ 707 |         if extension.lower() != ".docx":
+ 708 |             return None
+ 709 | 
+ 710 |         result = None
+ 711 |         with open(local_path, "rb") as docx_file:
+ 712 |             style_map = kwargs.get("style_map", None)
+ 713 | 
+ 714 |             result = mammoth.convert_to_html(docx_file, style_map=style_map)
+ 715 |             html_content = result.value
+ 716 |             result = self._convert(html_content)
+ 717 | 
+ 718 |         return result
+ 719 | 
+ 720 | 
+ 721 | class XlsxConverter(HtmlConverter):
+ 722 |     """
+ 723 |     Converts XLSX files to Markdown, with each sheet presented as a separate Markdown table.
+ 724 |     """
+ 725 | 
+ 726 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 727 |         # Bail if not a XLSX
+ 728 |         extension = kwargs.get("file_extension", "")
+ 729 |         if extension.lower() != ".xlsx":
+ 730 |             return None
+ 731 | 
+ 732 |         sheets = pd.read_excel(local_path, sheet_name=None, engine="openpyxl")
+ 733 |         md_content = ""
+ 734 |         for s in sheets:
+ 735 |             md_content += f"## {s}\n"
+ 736 |             html_content = sheets[s].to_html(index=False)
+ 737 |             md_content += self._convert(html_content).text_content.strip() + "\n\n"
+ 738 | 
+ 739 |         return DocumentConverterResult(
+ 740 |             title=None,
+ 741 |             text_content=md_content.strip(),
+ 742 |         )
+ 743 | 
+ 744 | 
+ 745 | class XlsConverter(HtmlConverter):
+ 746 |     """
+ 747 |     Converts XLS files to Markdown, with each sheet presented as a separate Markdown table.
+ 748 |     """
+ 749 | 
+ 750 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 751 |         # Bail if not a XLS
+ 752 |         extension = kwargs.get("file_extension", "")
+ 753 |         if extension.lower() != ".xls":
+ 754 |             return None
+ 755 | 
+ 756 |         sheets = pd.read_excel(local_path, sheet_name=None, engine="xlrd")
+ 757 |         md_content = ""
+ 758 |         for s in sheets:
+ 759 |             md_content += f"## {s}\n"
+ 760 |             html_content = sheets[s].to_html(index=False)
+ 761 |             md_content += self._convert(html_content).text_content.strip() + "\n\n"
+ 762 | 
+ 763 |         return DocumentConverterResult(
+ 764 |             title=None,
+ 765 |             text_content=md_content.strip(),
+ 766 |         )
+ 767 | 
+ 768 | 
+ 769 | class PptxConverter(HtmlConverter):
+ 770 |     """
+ 771 |     Converts PPTX files to Markdown. Supports heading, tables and images with alt text.
+ 772 |     """
+ 773 | 
+ 774 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 775 |         # Bail if not a PPTX
+ 776 |         extension = kwargs.get("file_extension", "")
+ 777 |         if extension.lower() != ".pptx":
+ 778 |             return None
+ 779 | 
+ 780 |         md_content = ""
+ 781 | 
+ 782 |         presentation = pptx.Presentation(local_path)
+ 783 |         slide_num = 0
+ 784 |         for slide in presentation.slides:
+ 785 |             slide_num += 1
+ 786 | 
+ 787 |             md_content += f"\n\n<!-- Slide number: {slide_num} -->\n"
+ 788 | 
+ 789 |             title = slide.shapes.title
+ 790 |             for shape in slide.shapes:
+ 791 |                 # Pictures
+ 792 |                 if self._is_picture(shape):
+ 793 |                     # https://github.com/scanny/python-pptx/pull/512#issuecomment-1713100069
+ 794 |                     alt_text = ""
+ 795 |                     try:
+ 796 |                         alt_text = shape._element._nvXxPr.cNvPr.attrib.get("descr", "")
+ 797 |                     except Exception:
+ 798 |                         pass
+ 799 | 
+ 800 |                     # A placeholder name
+ 801 |                     filename = re.sub(r"\W", "", shape.name) + ".jpg"
+ 802 |                     md_content += (
+ 803 |                         "\n!["
+ 804 |                         + (alt_text if alt_text else shape.name)
+ 805 |                         + "]("
+ 806 |                         + filename
+ 807 |                         + ")\n"
+ 808 |                     )
+ 809 | 
+ 810 |                 # Tables
+ 811 |                 if self._is_table(shape):
+ 812 |                     html_table = "<html><body><table>"
+ 813 |                     first_row = True
+ 814 |                     for row in shape.table.rows:
+ 815 |                         html_table += "<tr>"
+ 816 |                         for cell in row.cells:
+ 817 |                             if first_row:
+ 818 |                                 html_table += "<th>" + html.escape(cell.text) + "</th>"
+ 819 |                             else:
+ 820 |                                 html_table += "<td>" + html.escape(cell.text) + "</td>"
+ 821 |                         html_table += "</tr>"
+ 822 |                         first_row = False
+ 823 |                     html_table += "</table></body></html>"
+ 824 |                     md_content += (
+ 825 |                         "\n" + self._convert(html_table).text_content.strip() + "\n"
+ 826 |                     )
+ 827 | 
+ 828 |                 # Charts
+ 829 |                 if shape.has_chart:
+ 830 |                     md_content += self._convert_chart_to_markdown(shape.chart)
+ 831 | 
+ 832 |                 # Text areas
+ 833 |                 elif shape.has_text_frame:
+ 834 |                     if shape == title:
+ 835 |                         md_content += "# " + shape.text.lstrip() + "\n"
+ 836 |                     else:
+ 837 |                         md_content += shape.text + "\n"
+ 838 | 
+ 839 |             md_content = md_content.strip()
+ 840 | 
+ 841 |             if slide.has_notes_slide:
+ 842 |                 md_content += "\n\n### Notes:\n"
+ 843 |                 notes_frame = slide.notes_slide.notes_text_frame
+ 844 |                 if notes_frame is not None:
+ 845 |                     md_content += notes_frame.text
+ 846 |                 md_content = md_content.strip()
+ 847 | 
+ 848 |         return DocumentConverterResult(
+ 849 |             title=None,
+ 850 |             text_content=md_content.strip(),
+ 851 |         )
+ 852 | 
+ 853 |     def _is_picture(self, shape):
+ 854 |         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.PICTURE:
+ 855 |             return True
+ 856 |         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.PLACEHOLDER:
+ 857 |             if hasattr(shape, "image"):
+ 858 |                 return True
+ 859 |         return False
+ 860 | 
+ 861 |     def _is_table(self, shape):
+ 862 |         if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.TABLE:
+ 863 |             return True
+ 864 |         return False
+ 865 | 
+ 866 |     def _convert_chart_to_markdown(self, chart):
+ 867 |         md = "\n\n### Chart"
+ 868 |         if chart.has_title:
+ 869 |             md += f": {chart.chart_title.text_frame.text}"
+ 870 |         md += "\n\n"
+ 871 |         data = []
+ 872 |         category_names = [c.label for c in chart.plots[0].categories]
+ 873 |         series_names = [s.name for s in chart.series]
+ 874 |         data.append(["Category"] + series_names)
+ 875 | 
+ 876 |         for idx, category in enumerate(category_names):
+ 877 |             row = [category]
+ 878 |             for series in chart.series:
+ 879 |                 row.append(series.values[idx])
+ 880 |             data.append(row)
+ 881 | 
+ 882 |         markdown_table = []
+ 883 |         for row in data:
+ 884 |             markdown_table.append("| " + " | ".join(map(str, row)) + " |")
+ 885 |         header = markdown_table[0]
+ 886 |         separator = "|" + "|".join(["---"] * len(data[0])) + "|"
+ 887 |         return md + "\n".join([header, separator] + markdown_table[1:])
+ 888 | 
+ 889 | 
+ 890 | class MediaConverter(DocumentConverter):
+ 891 |     """
+ 892 |     Abstract class for multi-modal media (e.g., images and audio)
+ 893 |     """
+ 894 | 
+ 895 |     def _get_metadata(self, local_path, exiftool_path=None):
+ 896 |         if not exiftool_path:
+ 897 |             which_exiftool = shutil.which("exiftool")
+ 898 |             if which_exiftool:
+ 899 |                 warn(
+ 900 |                     f"""Implicit discovery of 'exiftool' is disabled. If you would like to continue to use exiftool in MarkItDown, please set the exiftool_path parameter in the MarkItDown consructor. E.g., 
+ 901 | 
+ 902 |     md = MarkItDown(exiftool_path="{which_exiftool}")
+ 903 | 
+ 904 | This warning will be removed in future releases.
+ 905 | """,
+ 906 |                     DeprecationWarning,
+ 907 |                 )
+ 908 | 
+ 909 |             return None
+ 910 |         else:
+ 911 |             try:
+ 912 |                 result = subprocess.run(
+ 913 |                     [exiftool_path, "-json", local_path], capture_output=True, text=True
+ 914 |                 ).stdout
+ 915 |                 return json.loads(result)[0]
+ 916 |             except Exception:
+ 917 |                 return None
+ 918 | 
+ 919 | 
+ 920 | class WavConverter(MediaConverter):
+ 921 |     """
+ 922 |     Converts WAV files to markdown via extraction of metadata (if `exiftool` is installed), and speech transcription (if `speech_recognition` is installed).
+ 923 |     """
+ 924 | 
+ 925 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 926 |         # Bail if not a WAV
+ 927 |         extension = kwargs.get("file_extension", "")
+ 928 |         if extension.lower() != ".wav":
+ 929 |             return None
+ 930 | 
+ 931 |         md_content = ""
+ 932 | 
+ 933 |         # Add metadata
+ 934 |         metadata = self._get_metadata(local_path, kwargs.get("exiftool_path"))
+ 935 |         if metadata:
+ 936 |             for f in [
+ 937 |                 "Title",
+ 938 |                 "Artist",
+ 939 |                 "Author",
+ 940 |                 "Band",
+ 941 |                 "Album",
+ 942 |                 "Genre",
+ 943 |                 "Track",
+ 944 |                 "DateTimeOriginal",
+ 945 |                 "CreateDate",
+ 946 |                 "Duration",
+ 947 |             ]:
+ 948 |                 if f in metadata:
+ 949 |                     md_content += f"{f}: {metadata[f]}\n"
+ 950 | 
+ 951 |         # Transcribe
+ 952 |         if IS_AUDIO_TRANSCRIPTION_CAPABLE:
+ 953 |             try:
+ 954 |                 transcript = self._transcribe_audio(local_path)
+ 955 |                 md_content += "\n\n### Audio Transcript:\n" + (
+ 956 |                     "[No speech detected]" if transcript == "" else transcript
+ 957 |                 )
+ 958 |             except Exception:
+ 959 |                 md_content += (
+ 960 |                     "\n\n### Audio Transcript:\nError. Could not transcribe this audio."
+ 961 |                 )
+ 962 | 
+ 963 |         return DocumentConverterResult(
+ 964 |             title=None,
+ 965 |             text_content=md_content.strip(),
+ 966 |         )
+ 967 | 
+ 968 |     def _transcribe_audio(self, local_path) -> str:
+ 969 |         recognizer = sr.Recognizer()
+ 970 |         with sr.AudioFile(local_path) as source:
+ 971 |             audio = recognizer.record(source)
+ 972 |             return recognizer.recognize_google(audio).strip()
+ 973 | 
+ 974 | 
+ 975 | class Mp3Converter(WavConverter):
+ 976 |     """
+ 977 |     Converts MP3 files to markdown via extraction of metadata (if `exiftool` is installed), and speech transcription (if `speech_recognition` AND `pydub` are installed).
+ 978 |     """
+ 979 | 
+ 980 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+ 981 |         # Bail if not a MP3
+ 982 |         extension = kwargs.get("file_extension", "")
+ 983 |         if extension.lower() != ".mp3":
+ 984 |             return None
+ 985 | 
+ 986 |         md_content = ""
+ 987 | 
+ 988 |         # Add metadata
+ 989 |         metadata = self._get_metadata(local_path, kwargs.get("exiftool_path"))
+ 990 |         if metadata:
+ 991 |             for f in [
+ 992 |                 "Title",
+ 993 |                 "Artist",
+ 994 |                 "Author",
+ 995 |                 "Band",
+ 996 |                 "Album",
+ 997 |                 "Genre",
+ 998 |                 "Track",
+ 999 |                 "DateTimeOriginal",
+1000 |                 "CreateDate",
+1001 |                 "Duration",
+1002 |             ]:
+1003 |                 if f in metadata:
+1004 |                     md_content += f"{f}: {metadata[f]}\n"
+1005 | 
+1006 |         # Transcribe
+1007 |         if IS_AUDIO_TRANSCRIPTION_CAPABLE:
+1008 |             handle, temp_path = tempfile.mkstemp(suffix=".wav")
+1009 |             os.close(handle)
+1010 |             try:
+1011 |                 sound = pydub.AudioSegment.from_mp3(local_path)
+1012 |                 sound.export(temp_path, format="wav")
+1013 | 
+1014 |                 _args = dict()
+1015 |                 _args.update(kwargs)
+1016 |                 _args["file_extension"] = ".wav"
+1017 | 
+1018 |                 try:
+1019 |                     transcript = super()._transcribe_audio(temp_path).strip()
+1020 |                     md_content += "\n\n### Audio Transcript:\n" + (
+1021 |                         "[No speech detected]" if transcript == "" else transcript
+1022 |                     )
+1023 |                 except Exception:
+1024 |                     md_content += "\n\n### Audio Transcript:\nError. Could not transcribe this audio."
+1025 | 
+1026 |             finally:
+1027 |                 os.unlink(temp_path)
+1028 | 
+1029 |         # Return the result
+1030 |         return DocumentConverterResult(
+1031 |             title=None,
+1032 |             text_content=md_content.strip(),
+1033 |         )
+1034 | 
+1035 | 
+1036 | class ImageConverter(MediaConverter):
+1037 |     """
+1038 |     Converts images to markdown via extraction of metadata (if `exiftool` is installed), OCR (if `easyocr` is installed), and description via a multimodal LLM (if an llm_client is configured).
+1039 |     """
+1040 | 
+1041 |     def convert(self, local_path, **kwargs) -> Union[None, DocumentConverterResult]:
+1042 |         # Bail if not an image
+1043 |         extension = kwargs.get("file_extension", "")
+1044 |         if extension.lower() not in [".jpg", ".jpeg", ".png"]:
+1045 |             return None
+1046 | 
+1047 |         md_content = ""
+1048 | 
+1049 |         # Add metadata
+1050 |         metadata = self._get_metadata(local_path, kwargs.get("exiftool_path"))
+1051 |         if metadata:
+1052 |             for f in [
+1053 |                 "ImageSize",
+1054 |                 "Title",
+1055 |                 "Caption",
+1056 |                 "Description",
+1057 |                 "Keywords",
+1058 |                 "Artist",
+1059 |                 "Author",
+1060 |                 "DateTimeOriginal",
+1061 |                 "CreateDate",
+1062 |                 "GPSPosition",
+1063 |             ]:
+1064 |                 if f in metadata:
+1065 |                     md_content += f"{f}: {metadata[f]}\n"
+1066 | 
+1067 |         # Try describing the image with GPTV
+1068 |         llm_client = kwargs.get("llm_client")
+1069 |         llm_model = kwargs.get("llm_model")
+1070 |         if llm_client is not None and llm_model is not None:
+1071 |             md_content += (
+1072 |                 "\n# Description:\n"
+1073 |                 + self._get_llm_description(
+1074 |                     local_path,
+1075 |                     extension,
+1076 |                     llm_client,
+1077 |                     llm_model,
+1078 |                     prompt=kwargs.get("llm_prompt"),
+1079 |                 ).strip()
+1080 |                 + "\n"
+1081 |             )
+1082 | 
+1083 |         return DocumentConverterResult(
+1084 |             title=None,
+1085 |             text_content=md_content,
+1086 |         )
+1087 | 
+1088 |     def _get_llm_description(self, local_path, extension, client, model, prompt=None):
+1089 |         if prompt is None or prompt.strip() == "":
+1090 |             prompt = "Write a detailed caption for this image."
+1091 | 
+1092 |         data_uri = ""
+1093 |         with open(local_path, "rb") as image_file:
+1094 |             content_type, encoding = mimetypes.guess_type("_dummy" + extension)
+1095 |             if content_type is None:
+1096 |                 content_type = "image/jpeg"
+1097 |             image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
+1098 |             data_uri = f"data:{content_type};base64,{image_base64}"
+1099 | 
+1100 |         messages = [
+1101 |             {
+1102 |                 "role": "user",
+1103 |                 "content": [
+1104 |                     {"type": "text", "text": prompt},
+1105 |                     {
+1106 |                         "type": "image_url",
+1107 |                         "image_url": {
+1108 |                             "url": data_uri,
+1109 |                         },
+1110 |                     },
+1111 |                 ],
+1112 |             }
+1113 |         ]
+1114 | 
+1115 |         response = client.chat.completions.create(model=model, messages=messages)
+1116 |         return response.choices[0].message.content
+1117 | 
+1118 | 
+1119 | class OutlookMsgConverter(DocumentConverter):
+1120 |     """Converts Outlook .msg files to markdown by extracting email metadata and content.
+1121 | 
+1122 |     Uses the olefile package to parse the .msg file structure and extract:
+1123 |     - Email headers (From, To, Subject)
+1124 |     - Email body content
+1125 |     """
+1126 | 
+1127 |     def convert(
+1128 |         self, local_path: str, **kwargs: Any
+1129 |     ) -> Union[None, DocumentConverterResult]:
+1130 |         # Bail if not a MSG file
+1131 |         extension = kwargs.get("file_extension", "")
+1132 |         if extension.lower() != ".msg":
+1133 |             return None
+1134 | 
+1135 |         try:
+1136 |             msg = olefile.OleFileIO(local_path)
+1137 |             # Extract email metadata
+1138 |             md_content = "# Email Message\n\n"
+1139 | 
+1140 |             # Get headers
+1141 |             headers = {
+1142 |                 "From": self._get_stream_data(msg, "__substg1.0_0C1F001F"),
+1143 |                 "To": self._get_stream_data(msg, "__substg1.0_0E04001F"),
+1144 |                 "Subject": self._get_stream_data(msg, "__substg1.0_0037001F"),
+1145 |             }
+1146 | 
+1147 |             # Add headers to markdown
+1148 |             for key, value in headers.items():
+1149 |                 if value:
+1150 |                     md_content += f"**{key}:** {value}\n"
+1151 | 
+1152 |             md_content += "\n## Content\n\n"
+1153 | 
+1154 |             # Get email body
+1155 |             body = self._get_stream_data(msg, "__substg1.0_1000001F")
+1156 |             if body:
+1157 |                 md_content += body
+1158 | 
+1159 |             msg.close()
+1160 | 
+1161 |             return DocumentConverterResult(
+1162 |                 title=headers.get("Subject"), text_content=md_content.strip()
+1163 |             )
+1164 | 
+1165 |         except Exception as e:
+1166 |             raise FileConversionException(
+1167 |                 f"Could not convert MSG file '{local_path}': {str(e)}"
+1168 |             )
+1169 | 
+1170 |     def _get_stream_data(
+1171 |         self, msg: olefile.OleFileIO, stream_path: str
+1172 |     ) -> Union[str, None]:
+1173 |         """Helper to safely extract and decode stream data from the MSG file."""
+1174 |         try:
+1175 |             if msg.exists(stream_path):
+1176 |                 data = msg.openstream(stream_path).read()
+1177 |                 # Try UTF-16 first (common for .msg files)
+1178 |                 try:
+1179 |                     return data.decode("utf-16-le").strip()
+1180 |                 except UnicodeDecodeError:
+1181 |                     # Fall back to UTF-8
+1182 |                     try:
+1183 |                         return data.decode("utf-8").strip()
+1184 |                     except UnicodeDecodeError:
+1185 |                         # Last resort - ignore errors
+1186 |                         return data.decode("utf-8", errors="ignore").strip()
+1187 |         except Exception:
+1188 |             pass
+1189 |         return None
+1190 | 
+1191 | 
+1192 | class ZipConverter(DocumentConverter):
+1193 |     """Converts ZIP files to markdown by extracting and converting all contained files.
+1194 | 
+1195 |     The converter extracts the ZIP contents to a temporary directory, processes each file
+1196 |     using appropriate converters based on file extensions, and then combines the results
+1197 |     into a single markdown document. The temporary directory is cleaned up after processing.
+1198 | 
+1199 |     Example output format:
+1200 |     ```markdown
+1201 |     Content from the zip file `example.zip`:
+1202 | 
+1203 |     ## File: docs/readme.txt
+1204 | 
+1205 |     This is the content of readme.txt
+1206 |     Multiple lines are preserved
+1207 | 
+1208 |     ## File: images/example.jpg
+1209 | 
+1210 |     ImageSize: 1920x1080
+1211 |     DateTimeOriginal: 2024-02-15 14:30:00
+1212 |     Description: A beautiful landscape photo
+1213 | 
+1214 |     ## File: data/report.xlsx
+1215 | 
+1216 |     ## Sheet1
+1217 |     | Column1 | Column2 | Column3 |
+1218 |     |---------|---------|---------|
+1219 |     | data1   | data2   | data3   |
+1220 |     | data4   | data5   | data6   |
+1221 |     ```
+1222 | 
+1223 |     Key features:
+1224 |     - Maintains original file structure in headings
+1225 |     - Processes nested files recursively
+1226 |     - Uses appropriate converters for each file type
+1227 |     - Preserves formatting of converted content
+1228 |     - Cleans up temporary files after processing
+1229 |     """
+1230 | 
+1231 |     def convert(
+1232 |         self, local_path: str, **kwargs: Any
+1233 |     ) -> Union[None, DocumentConverterResult]:
+1234 |         # Bail if not a ZIP
+1235 |         extension = kwargs.get("file_extension", "")
+1236 |         if extension.lower() != ".zip":
+1237 |             return None
+1238 | 
+1239 |         # Get parent converters list if available
+1240 |         parent_converters = kwargs.get("_parent_converters", [])
+1241 |         if not parent_converters:
+1242 |             return DocumentConverterResult(
+1243 |                 title=None,
+1244 |                 text_content=f"[ERROR] No converters available to process zip contents from: {local_path}",
+1245 |             )
+1246 | 
+1247 |         extracted_zip_folder_name = (
+1248 |             f"extracted_{os.path.basename(local_path).replace('.zip', '_zip')}"
+1249 |         )
+1250 |         extraction_dir = os.path.normpath(
+1251 |             os.path.join(os.path.dirname(local_path), extracted_zip_folder_name)
+1252 |         )
+1253 |         md_content = f"Content from the zip file `{os.path.basename(local_path)}`:\n\n"
+1254 | 
+1255 |         try:
+1256 |             # Extract the zip file safely
+1257 |             with zipfile.ZipFile(local_path, "r") as zipObj:
+1258 |                 # Safeguard against path traversal
+1259 |                 for member in zipObj.namelist():
+1260 |                     member_path = os.path.normpath(os.path.join(extraction_dir, member))
+1261 |                     if (
+1262 |                         not os.path.commonprefix([extraction_dir, member_path])
+1263 |                         == extraction_dir
+1264 |                     ):
+1265 |                         raise ValueError(
+1266 |                             f"Path traversal detected in zip file: {member}"
+1267 |                         )
+1268 | 
+1269 |                 # Extract all files safely
+1270 |                 zipObj.extractall(path=extraction_dir)
+1271 | 
+1272 |             # Process each extracted file
+1273 |             for root, dirs, files in os.walk(extraction_dir):
+1274 |                 for name in files:
+1275 |                     file_path = os.path.join(root, name)
+1276 |                     relative_path = os.path.relpath(file_path, extraction_dir)
+1277 | 
+1278 |                     # Get file extension
+1279 |                     _, file_extension = os.path.splitext(name)
+1280 | 
+1281 |                     # Update kwargs for the file
+1282 |                     file_kwargs = kwargs.copy()
+1283 |                     file_kwargs["file_extension"] = file_extension
+1284 |                     file_kwargs["_parent_converters"] = parent_converters
+1285 | 
+1286 |                     # Try converting the file using available converters
+1287 |                     for converter in parent_converters:
+1288 |                         # Skip the zip converter to avoid infinite recursion
+1289 |                         if isinstance(converter, ZipConverter):
+1290 |                             continue
+1291 | 
+1292 |                         result = converter.convert(file_path, **file_kwargs)
+1293 |                         if result is not None:
+1294 |                             md_content += f"\n## File: {relative_path}\n\n"
+1295 |                             md_content += result.text_content + "\n\n"
+1296 |                             break
+1297 | 
+1298 |             # Clean up extracted files if specified
+1299 |             if kwargs.get("cleanup_extracted", True):
+1300 |                 shutil.rmtree(extraction_dir)
+1301 | 
+1302 |             return DocumentConverterResult(title=None, text_content=md_content.strip())
+1303 | 
+1304 |         except zipfile.BadZipFile:
+1305 |             return DocumentConverterResult(
+1306 |                 title=None,
+1307 |                 text_content=f"[ERROR] Invalid or corrupted zip file: {local_path}",
+1308 |             )
+1309 |         except ValueError as ve:
+1310 |             return DocumentConverterResult(
+1311 |                 title=None,
+1312 |                 text_content=f"[ERROR] Security error in zip file {local_path}: {str(ve)}",
+1313 |             )
+1314 |         except Exception as e:
+1315 |             return DocumentConverterResult(
+1316 |                 title=None,
+1317 |                 text_content=f"[ERROR] Failed to process zip file {local_path}: {str(e)}",
+1318 |             )
+1319 | 
+1320 | 
+1321 | class FileConversionException(BaseException):
+1322 |     pass
+1323 | 
+1324 | 
+1325 | class UnsupportedFormatException(BaseException):
+1326 |     pass
+1327 | 
+1328 | 
+1329 | class MarkItDown:
+1330 |     """(In preview) An extremely simple text-based document reader, suitable for LLM use.
+1331 |     This reader will convert common file-types or webpages to Markdown."""
+1332 | 
+1333 |     def __init__(
+1334 |         self,
+1335 |         requests_session: Optional[requests.Session] = None,
+1336 |         llm_client: Optional[Any] = None,
+1337 |         llm_model: Optional[str] = None,
+1338 |         style_map: Optional[str] = None,
+1339 |         exiftool_path: Optional[str] = None,
+1340 |         # Deprecated
+1341 |         mlm_client: Optional[Any] = None,
+1342 |         mlm_model: Optional[str] = None,
+1343 |     ):
+1344 |         if requests_session is None:
+1345 |             self._requests_session = requests.Session()
+1346 |         else:
+1347 |             self._requests_session = requests_session
+1348 | 
+1349 |         if exiftool_path is None:
+1350 |             exiftool_path = os.environ.get("EXIFTOOL_PATH")
+1351 | 
+1352 |         # Handle deprecation notices
+1353 |         #############################
+1354 |         if mlm_client is not None:
+1355 |             if llm_client is None:
+1356 |                 warn(
+1357 |                     "'mlm_client' is deprecated, and was renamed 'llm_client'.",
+1358 |                     DeprecationWarning,
+1359 |                 )
+1360 |                 llm_client = mlm_client
+1361 |                 mlm_client = None
+1362 |             else:
+1363 |                 raise ValueError(
+1364 |                     "'mlm_client' is deprecated, and was renamed 'llm_client'. Do not use both at the same time. Just use 'llm_client' instead."
+1365 |                 )
+1366 | 
+1367 |         if mlm_model is not None:
+1368 |             if llm_model is None:
+1369 |                 warn(
+1370 |                     "'mlm_model' is deprecated, and was renamed 'llm_model'.",
+1371 |                     DeprecationWarning,
+1372 |                 )
+1373 |                 llm_model = mlm_model
+1374 |                 mlm_model = None
+1375 |             else:
+1376 |                 raise ValueError(
+1377 |                     "'mlm_model' is deprecated, and was renamed 'llm_model'. Do not use both at the same time. Just use 'llm_model' instead."
+1378 |                 )
+1379 |         #############################
+1380 | 
+1381 |         self._llm_client = llm_client
+1382 |         self._llm_model = llm_model
+1383 |         self._style_map = style_map
+1384 |         self._exiftool_path = exiftool_path
+1385 | 
+1386 |         self._page_converters: List[DocumentConverter] = []
+1387 | 
+1388 |         # Register converters for successful browsing operations
+1389 |         # Later registrations are tried first / take higher priority than earlier registrations
+1390 |         # To this end, the most specific converters should appear below the most generic converters
+1391 |         self.register_page_converter(PlainTextConverter())
+1392 |         self.register_page_converter(HtmlConverter())
+1393 |         self.register_page_converter(RSSConverter())
+1394 |         self.register_page_converter(WikipediaConverter())
+1395 |         self.register_page_converter(YouTubeConverter())
+1396 |         self.register_page_converter(BingSerpConverter())
+1397 |         self.register_page_converter(DocxConverter())
+1398 |         self.register_page_converter(XlsxConverter())
+1399 |         self.register_page_converter(XlsConverter())
+1400 |         self.register_page_converter(PptxConverter())
+1401 |         self.register_page_converter(WavConverter())
+1402 |         self.register_page_converter(Mp3Converter())
+1403 |         self.register_page_converter(ImageConverter())
+1404 |         self.register_page_converter(IpynbConverter())
+1405 |         self.register_page_converter(PdfConverter())
+1406 |         self.register_page_converter(ZipConverter())
+1407 |         self.register_page_converter(OutlookMsgConverter())
+1408 | 
+1409 |     def convert(
+1410 |         self, source: Union[str, requests.Response, Path], **kwargs: Any
+1411 |     ) -> DocumentConverterResult:  # TODO: deal with kwargs
+1412 |         """
+1413 |         Args:
+1414 |             - source: can be a string representing a path either as string pathlib path object or url, or a requests.response object
+1415 |             - extension: specifies the file extension to use when interpreting the file. If None, infer from source (path, uri, content-type, etc.)
+1416 |         """
+1417 | 
+1418 |         # Local path or url
+1419 |         if isinstance(source, str):
+1420 |             if (
+1421 |                 source.startswith("http://")
+1422 |                 or source.startswith("https://")
+1423 |                 or source.startswith("file://")
+1424 |             ):
+1425 |                 return self.convert_url(source, **kwargs)
+1426 |             else:
+1427 |                 return self.convert_local(source, **kwargs)
+1428 |         # Request response
+1429 |         elif isinstance(source, requests.Response):
+1430 |             return self.convert_response(source, **kwargs)
+1431 |         elif isinstance(source, Path):
+1432 |             return self.convert_local(source, **kwargs)
+1433 | 
+1434 |     def convert_local(
+1435 |         self, path: Union[str, Path], **kwargs: Any
+1436 |     ) -> DocumentConverterResult:  # TODO: deal with kwargs
+1437 |         if isinstance(path, Path):
+1438 |             path = str(path)
+1439 |         # Prepare a list of extensions to try (in order of priority)
+1440 |         ext = kwargs.get("file_extension")
+1441 |         extensions = [ext] if ext is not None else []
+1442 | 
+1443 |         # Get extension alternatives from the path and puremagic
+1444 |         base, ext = os.path.splitext(path)
+1445 |         self._append_ext(extensions, ext)
+1446 | 
+1447 |         for g in self._guess_ext_magic(path):
+1448 |             self._append_ext(extensions, g)
+1449 | 
+1450 |         # Convert
+1451 |         return self._convert(path, extensions, **kwargs)
+1452 | 
+1453 |     # TODO what should stream's type be?
+1454 |     def convert_stream(
+1455 |         self, stream: Any, **kwargs: Any
+1456 |     ) -> DocumentConverterResult:  # TODO: deal with kwargs
+1457 |         # Prepare a list of extensions to try (in order of priority)
+1458 |         ext = kwargs.get("file_extension")
+1459 |         extensions = [ext] if ext is not None else []
+1460 | 
+1461 |         # Save the file locally to a temporary file. It will be deleted before this method exits
+1462 |         handle, temp_path = tempfile.mkstemp()
+1463 |         fh = os.fdopen(handle, "wb")
+1464 |         result = None
+1465 |         try:
+1466 |             # Write to the temporary file
+1467 |             content = stream.read()
+1468 |             if isinstance(content, str):
+1469 |                 fh.write(content.encode("utf-8"))
+1470 |             else:
+1471 |                 fh.write(content)
+1472 |             fh.close()
+1473 | 
+1474 |             # Use puremagic to check for more extension options
+1475 |             for g in self._guess_ext_magic(temp_path):
+1476 |                 self._append_ext(extensions, g)
+1477 | 
+1478 |             # Convert
+1479 |             result = self._convert(temp_path, extensions, **kwargs)
+1480 |         # Clean up
+1481 |         finally:
+1482 |             try:
+1483 |                 fh.close()
+1484 |             except Exception:
+1485 |                 pass
+1486 |             os.unlink(temp_path)
+1487 | 
+1488 |         return result
+1489 | 
+1490 |     def convert_url(
+1491 |         self, url: str, **kwargs: Any
+1492 |     ) -> DocumentConverterResult:  # TODO: fix kwargs type
+1493 |         # Send a HTTP request to the URL
+1494 |         response = self._requests_session.get(url, stream=True)
+1495 |         response.raise_for_status()
+1496 |         return self.convert_response(response, **kwargs)
+1497 | 
+1498 |     def convert_response(
+1499 |         self, response: requests.Response, **kwargs: Any
+1500 |     ) -> DocumentConverterResult:  # TODO fix kwargs type
+1501 |         # Prepare a list of extensions to try (in order of priority)
+1502 |         ext = kwargs.get("file_extension")
+1503 |         extensions = [ext] if ext is not None else []
+1504 | 
+1505 |         # Guess from the mimetype
+1506 |         content_type = response.headers.get("content-type", "").split(";")[0]
+1507 |         self._append_ext(extensions, mimetypes.guess_extension(content_type))
+1508 | 
+1509 |         # Read the content disposition if there is one
+1510 |         content_disposition = response.headers.get("content-disposition", "")
+1511 |         m = re.search(r"filename=([^;]+)", content_disposition)
+1512 |         if m:
+1513 |             base, ext = os.path.splitext(m.group(1).strip("\"'"))
+1514 |             self._append_ext(extensions, ext)
+1515 | 
+1516 |         # Read from the extension from the path
+1517 |         base, ext = os.path.splitext(urlparse(response.url).path)
+1518 |         self._append_ext(extensions, ext)
+1519 | 
+1520 |         # Save the file locally to a temporary file. It will be deleted before this method exits
+1521 |         handle, temp_path = tempfile.mkstemp()
+1522 |         fh = os.fdopen(handle, "wb")
+1523 |         result = None
+1524 |         try:
+1525 |             # Download the file
+1526 |             for chunk in response.iter_content(chunk_size=512):
+1527 |                 fh.write(chunk)
+1528 |             fh.close()
+1529 | 
+1530 |             # Use puremagic to check for more extension options
+1531 |             for g in self._guess_ext_magic(temp_path):
+1532 |                 self._append_ext(extensions, g)
+1533 | 
+1534 |             # Convert
+1535 |             result = self._convert(temp_path, extensions, url=response.url, **kwargs)
+1536 |         # Clean up
+1537 |         finally:
+1538 |             try:
+1539 |                 fh.close()
+1540 |             except Exception:
+1541 |                 pass
+1542 |             os.unlink(temp_path)
+1543 | 
+1544 |         return result
+1545 | 
+1546 |     def _convert(
+1547 |         self, local_path: str, extensions: List[Union[str, None]], **kwargs
+1548 |     ) -> DocumentConverterResult:
+1549 |         error_trace = ""
+1550 |         for ext in extensions + [None]:  # Try last with no extension
+1551 |             for converter in self._page_converters:
+1552 |                 _kwargs = copy.deepcopy(kwargs)
+1553 | 
+1554 |                 # Overwrite file_extension appropriately
+1555 |                 if ext is None:
+1556 |                     if "file_extension" in _kwargs:
+1557 |                         del _kwargs["file_extension"]
+1558 |                 else:
+1559 |                     _kwargs.update({"file_extension": ext})
+1560 | 
+1561 |                 # Copy any additional global options
+1562 |                 if "llm_client" not in _kwargs and self._llm_client is not None:
+1563 |                     _kwargs["llm_client"] = self._llm_client
+1564 | 
+1565 |                 if "llm_model" not in _kwargs and self._llm_model is not None:
+1566 |                     _kwargs["llm_model"] = self._llm_model
+1567 | 
+1568 |                 if "style_map" not in _kwargs and self._style_map is not None:
+1569 |                     _kwargs["style_map"] = self._style_map
+1570 | 
+1571 |                 if "exiftool_path" not in _kwargs and self._exiftool_path is not None:
+1572 |                     _kwargs["exiftool_path"] = self._exiftool_path
+1573 | 
+1574 |                 # Add the list of converters for nested processing
+1575 |                 _kwargs["_parent_converters"] = self._page_converters
+1576 | 
+1577 |                 # If we hit an error log it and keep trying
+1578 |                 try:
+1579 |                     res = converter.convert(local_path, **_kwargs)
+1580 |                 except Exception:
+1581 |                     error_trace = ("\n\n" + traceback.format_exc()).strip()
+1582 | 
+1583 |                 if res is not None:
+1584 |                     # Normalize the content
+1585 |                     res.text_content = "\n".join(
+1586 |                         [line.rstrip() for line in re.split(r"\r?\n", res.text_content)]
+1587 |                     )
+1588 |                     res.text_content = re.sub(r"\n{3,}", "\n\n", res.text_content)
+1589 | 
+1590 |                     # Todo
+1591 |                     return res
+1592 | 
+1593 |         # If we got this far without success, report any exceptions
+1594 |         if len(error_trace) > 0:
+1595 |             raise FileConversionException(
+1596 |                 f"Could not convert '{local_path}' to Markdown. File type was recognized as {extensions}. While converting the file, the following error was encountered:\n\n{error_trace}"
+1597 |             )
+1598 | 
+1599 |         # Nothing can handle it!
+1600 |         raise UnsupportedFormatException(
+1601 |             f"Could not convert '{local_path}' to Markdown. The formats {extensions} are not supported."
+1602 |         )
+1603 | 
+1604 |     def _append_ext(self, extensions, ext):
+1605 |         """Append a unique non-None, non-empty extension to a list of extensions."""
+1606 |         if ext is None:
+1607 |             return
+1608 |         ext = ext.strip()
+1609 |         if ext == "":
+1610 |             return
+1611 |         # if ext not in extensions:
+1612 |         extensions.append(ext)
+1613 | 
+1614 |     def _guess_ext_magic(self, path):
+1615 |         """Use puremagic (a Python implementation of libmagic) to guess a file's extension based on the first few bytes."""
+1616 |         # Use puremagic to guess
+1617 |         try:
+1618 |             guesses = puremagic.magic_file(path)
+1619 | 
+1620 |             # Fix for: https://github.com/microsoft/markitdown/issues/222
+1621 |             # If there are no guesses, then try again after trimming leading ASCII whitespaces.
+1622 |             # ASCII whitespace characters are those byte values in the sequence b' \t\n\r\x0b\f'
+1623 |             # (space, tab, newline, carriage return, vertical tab, form feed).
+1624 |             if len(guesses) == 0:
+1625 |                 with open(path, "rb") as file:
+1626 |                     while True:
+1627 |                         char = file.read(1)
+1628 |                         if not char:  # End of file
+1629 |                             break
+1630 |                         if not char.isspace():
+1631 |                             file.seek(file.tell() - 1)
+1632 |                             break
+1633 |                     try:
+1634 |                         guesses = puremagic.magic_stream(file)
+1635 |                     except puremagic.main.PureError:
+1636 |                         pass
+1637 | 
+1638 |             extensions = list()
+1639 |             for g in guesses:
+1640 |                 ext = g.extension.strip()
+1641 |                 if len(ext) > 0:
+1642 |                     if not ext.startswith("."):
+1643 |                         ext = "." + ext
+1644 |                     if ext not in extensions:
+1645 |                         extensions.append(ext)
+1646 |             return extensions
+1647 |         except FileNotFoundError:
+1648 |             pass
+1649 |         except IsADirectoryError:
+1650 |             pass
+1651 |         except PermissionError:
+1652 |             pass
+1653 |         return []
+1654 | 
+1655 |     def register_page_converter(self, converter: DocumentConverter) -> None:
+1656 |         """Register a page text converter."""
+1657 |         self._page_converters.insert(0, converter)
+1658 | 
+
+
+--------------------------------------------------------------------------------
+/src/markitdown/py.typed:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/src/markitdown/py.typed
+
+
+--------------------------------------------------------------------------------
+/tests/__init__.py:
+--------------------------------------------------------------------------------
+1 | # SPDX-FileCopyrightText: 2024-present Adam Fourney <adamfo@microsoft.com>
+2 | #
+3 | # SPDX-License-Identifier: MIT
+4 | 
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.docx:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test.docx
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.jpg:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test.jpg
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.json:
+--------------------------------------------------------------------------------
+ 1 | {
+ 2 |     "key1": "string_value",
+ 3 |     "key2": 1234,
+ 4 |     "key3": [
+ 5 |         "list_value1",
+ 6 |         "list_value2"
+ 7 |     ],
+ 8 |     "5b64c88c-b3c3-4510-bcb8-da0b200602d8": "uuid_key",
+ 9 |     "uuid_value": "9700dc99-6685-40b4-9a3a-5e406dcb37f3"
+10 | }
+11 | 
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.pptx:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test.pptx
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.xls:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test.xls
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test.xlsx:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test.xlsx
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_blog.html:
+--------------------------------------------------------------------------------
+ 1 | <!doctype html>
+ 2 | <html lang="en" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+ 3 | <head>
+ 4 | <meta charset="UTF-8">
+ 5 | <meta name="generator" content="Docusaurus v3.1.1">
+ 6 | <title data-rh="true">Does Model and Inference Parameter Matter in LLM Applications? - A Case Study for MATH | AutoGen</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://microsoft.github.io/autogen/blog/2023/04/21/LLM-tuning-math"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Does Model and Inference Parameter Matter in LLM Applications? - A Case Study for MATH | AutoGen"><meta data-rh="true" name="description" content="level 2 algebra"><meta data-rh="true" property="og:description" content="level 2 algebra"><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2023-04-21T00:00:00.000Z"><meta data-rh="true" property="article:author" content="https://www.linkedin.com/in/chi-wang-49b15b16/"><meta data-rh="true" property="article:tag" content="LLM,GPT,research"><link data-rh="true" rel="icon" href="/autogen/img/ag.ico"><link data-rh="true" rel="canonical" href="https://microsoft.github.io/autogen/blog/2023/04/21/LLM-tuning-math"><link data-rh="true" rel="alternate" href="https://microsoft.github.io/autogen/blog/2023/04/21/LLM-tuning-math" hreflang="en"><link data-rh="true" rel="alternate" href="https://microsoft.github.io/autogen/blog/2023/04/21/LLM-tuning-math" hreflang="x-default"><link rel="alternate" type="application/rss+xml" href="/autogen/blog/rss.xml" title="AutoGen RSS Feed">
+ 7 | <link rel="alternate" type="application/atom+xml" href="/autogen/blog/atom.xml" title="AutoGen Atom Feed">
+ 8 | 
+ 9 | 
+10 | 
+11 | 
+12 | 
+13 | 
+14 | <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css" integrity="sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc" crossorigin="anonymous">
+15 | <script src="/autogen/js/custom.js" async defer="defer"></script><link rel="stylesheet" href="/autogen/assets/css/styles.ca10f300.css">
+16 | <script src="/autogen/assets/js/runtime~main.83ab9fec.js" defer="defer"></script>
+17 | <script src="/autogen/assets/js/main.5d28c826.js" defer="defer"></script>
+18 | </head>
+19 | <body class="navigation-with-keyboard">
+20 | <script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const a=new URLSearchParams(window.location.search).entries();for(var[t,e]of a)if(t.startsWith("docusaurus-data-")){var n=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(n,e)}}catch(t){}}(),document.documentElement.setAttribute("data-announcement-bar-initially-dismissed",function(){try{return"true"===localStorage.getItem("docusaurus.announcement.dismiss")}catch(t){}return!1}())</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><div class="announcementBar_mb4j" style="background-color:#fafbfc;color:#091E42" role="banner"><div class="announcementBarPlaceholder_vyr4"></div><div class="content_knG7 announcementBarContent_xLdY">What's new in AutoGen? Read <a href="/autogen/blog/2024/03/03/AutoGen-Update">this blog</a> for an overview of updates</div><button type="button" aria-label="Close" class="clean-btn close closeButton_CVFx announcementBarClose_gvF7"><svg viewBox="0 0 15 15" width="14" height="14"><g stroke="currentColor" stroke-width="3.1"><path d="M.75.75l13.5 13.5M14.25.75L.75 14.25"></path></g></svg></button></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/autogen/"><div class="navbar__logo"><img src="/autogen/img/ag.svg" alt="AutoGen" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/autogen/img/ag.svg" alt="AutoGen" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">AutoGen</b></a><a class="navbar__item navbar__link" href="/autogen/docs/Getting-Started">Docs</a><a class="navbar__item navbar__link" href="/autogen/docs/reference/agentchat/conversable_agent">API</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/autogen/blog">Blog</a><a class="navbar__item navbar__link" href="/autogen/docs/FAQ">FAQ</a><a class="navbar__item navbar__link" href="/autogen/docs/Examples">Examples</a><a class="navbar__item navbar__link" href="/autogen/docs/notebooks">Notebooks</a><a class="navbar__item navbar__link" href="/autogen/docs/Gallery">Gallery</a></div><div class="navbar__items navbar__items--right"><div class="navbar__item dropdown dropdown--hoverable dropdown--right"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link">Other Languages</a><ul class="dropdown__menu"><li><a href="https://microsoft.github.io/autogen-for-net/" target="_blank" rel="noopener noreferrer" class="dropdown__link">Dotnet<svg width="12" height="12" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div><a href="https://github.com/microsoft/autogen" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"><div class="navbar__search searchBarContainer_NW3z"><input placeholder="Search" aria-label="Search" class="navbar__search-input"><div class="loadingRing_RJI3 searchBarLoadingRing_YnHq"><div></div><div></div><div></div><div></div></div><div class="searchHintContainer_Pkmr"><kbd class="searchHint_iIMx">ctrl</kbd><kbd class="searchHint_iIMx">K</kbd></div></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><div class="container margin-vert--lg"><div class="row"><aside class="col col--3"><nav class="sidebar_re4s thin-scrollbar" aria-label="Blog recent posts navigation"><div class="sidebarItemTitle_pO2u margin-bottom--md">Recent posts</div><ul class="sidebarItemList_Yudw clean-list"><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/03/03/AutoGen-Update">What&#x27;s New in AutoGen?</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/02/29/StateFlow">StateFlow - Build LLM Workflows with Customized State-Oriented Transition Function in GroupChat</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/02/11/FSM-GroupChat">FSM Group Chat -- User-specified agent transitions</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/02/02/AutoAnny">Anny: Assisting AutoGen Devs Via AutoGen</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/01/26/Custom-Models">AutoGen with Custom Models: Empowering Users to Use Their Own Inference Mechanism</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/01/25/AutoGenBench">AutoGenBench -- A Tool for Measuring and Evaluating AutoGen Agents</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2024/01/23/Code-execution-in-docker">Code execution is now by default inside docker container</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/12/29/AgentDescriptions">All About Agent Descriptions</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/12/23/AgentOptimizer">AgentOptimizer - An Agentic Way to Train Your LLM Agent</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/12/01/AutoGenStudio">AutoGen Studio: Interactively Explore Multi-Agent Workflows</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/11/26/Agent-AutoBuild">Agent AutoBuild - Automatically Building Multi-agent Systems</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/11/20/AgentEval">How to Assess Utility of LLM-powered Applications?</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/11/13/OAI-assistants">AutoGen Meets GPTs</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/11/09/EcoAssistant">EcoAssistant - Using LLM Assistants More Accurately and Affordably</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/11/06/LMM-Agent">Multimodal with GPT-4V and LLaVA</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/10/26/TeachableAgent">AutoGen&#x27;s Teachable Agents</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/10/18/RetrieveChat">Retrieval-Augmented Generation (RAG) Applications with AutoGen</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/07/14/Local-LLMs">Use AutoGen for Local LLMs</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/06/28/MathChat">MathChat - An Conversational Framework to Solve Math Problems</a></li><li class="sidebarItem__DBe"><a class="sidebarItemLink_mo7H" href="/autogen/blog/2023/05/18/GPT-adaptive-humaneval">Achieve More, Pay Less - Use GPT-4 Smartly</a></li><li class="sidebarItem__DBe"><a aria-current="page" class="sidebarItemLink_mo7H sidebarItemLinkActive_I1ZP" href="/autogen/blog/2023/04/21/LLM-tuning-math">Does Model and Inference Parameter Matter in LLM Applications? - A Case Study for MATH</a></li></ul></nav></aside><main class="col col--7" itemscope="" itemtype="https://schema.org/Blog"><article itemprop="blogPost" itemscope="" itemtype="https://schema.org/BlogPosting"><meta itemprop="description" content="level 2 algebra"><header><h1 class="title_f1Hy" itemprop="headline">Does Model and Inference Parameter Matter in LLM Applications? - A Case Study for MATH</h1><div class="container_mt6G margin-vert--md"><time datetime="2023-04-21T00:00:00.000Z" itemprop="datePublished">April 21, 2023</time> · <!-- -->6 min read</div><div class="margin-top--md margin-bottom--sm row"><div class="col col--6 authorCol_Hf19"><div class="avatar margin-bottom--sm"><a href="https://www.linkedin.com/in/chi-wang-49b15b16/" target="_blank" rel="noopener noreferrer" class="avatar__photo-link"><img class="avatar__photo" src="https://github.com/sonichi.png" alt="Chi Wang" itemprop="image"></a><div class="avatar__intro" itemprop="author" itemscope="" itemtype="https://schema.org/Person"><div class="avatar__name"><a href="https://www.linkedin.com/in/chi-wang-49b15b16/" target="_blank" rel="noopener noreferrer" itemprop="url"><span itemprop="name">Chi Wang</span></a></div><small class="avatar__subtitle" itemprop="description">Principal Researcher at Microsoft Research</small></div></div></div></div></header><div id="__blog-post-container" class="markdown" itemprop="articleBody"><p><img decoding="async" loading="lazy" alt="level 2 algebra" src="/autogen/assets/images/level2algebra-659ba95286432d9945fc89e84d606797.png" width="575" height="469" class="img_ev3q"></p>
+21 | <p><strong>TL;DR:</strong></p>
+22 | <ul>
+23 | <li><strong>Just by tuning the inference parameters like model, number of responses, temperature etc. without changing any model weights or prompt, the baseline accuracy of untuned gpt-4 can be improved by 20% in high school math competition problems.</strong></li>
+24 | <li><strong>For easy problems, the tuned gpt-3.5-turbo model vastly outperformed untuned gpt-4 in accuracy (e.g., 90% vs. 70%) and cost efficiency. For hard problems, the tuned gpt-4 is much more accurate (e.g., 35% vs. 20%) and less expensive than untuned gpt-4.</strong></li>
+25 | <li><strong>AutoGen can help with model selection, parameter tuning, and cost-saving in LLM applications.</strong></li>
+26 | </ul>
+27 | <p>Large language models (LLMs) are powerful tools that can generate natural language texts for various applications, such as chatbots, summarization, translation, and more. GPT-4 is currently the state of the art LLM in the world. Is model selection irrelevant? What about inference parameters?</p>
+28 | <p>In this blog post, we will explore how model and inference parameter matter in LLM applications, using a case study for <a href="https://datasets-benchmarks-proceedings.neurips.cc/paper/2021/hash/be83ab3ecd0db773eb2dc1b0a17836a1-Abstract-round2.html" target="_blank" rel="noopener noreferrer">MATH</a>, a benchmark for evaluating LLMs on advanced mathematical problem solving. MATH consists of 12K math competition problems from AMC-10, AMC-12 and AIME. Each problem is accompanied by a step-by-step solution.</p>
+29 | <p>We will use AutoGen to automatically find the best model and inference parameter for LLMs on a given task and dataset given an inference budget, using a novel low-cost search &amp; pruning strategy. AutoGen currently supports all the LLMs from OpenAI, such as GPT-3.5 and GPT-4.</p>
+30 | <p>We will use AutoGen to perform model selection and inference parameter tuning. Then we compare the performance and inference cost on solving algebra problems with the untuned gpt-4. We will also analyze how different difficulty levels affect the results.</p>
+31 | <h2 class="anchor anchorWithStickyNavbar_LWe7" id="experiment-setup">Experiment Setup<a href="#experiment-setup" class="hash-link" aria-label="Direct link to Experiment Setup" title="Direct link to Experiment Setup">​</a></h2>
+32 | <p>We use AutoGen to select between the following models with a target inference budget $0.02 per instance:</p>
+33 | <ul>
+34 | <li>gpt-3.5-turbo, a relatively cheap model that powers the popular ChatGPT app</li>
+35 | <li>gpt-4, the state of the art LLM that costs more than 10 times of gpt-3.5-turbo</li>
+36 | </ul>
+37 | <p>We adapt the models using 20 examples in the train set, using the problem statement as the input and generating the solution as the output. We use the following inference parameters:</p>
+38 | <ul>
+39 | <li>temperature: The parameter that controls the randomness of the output text. A higher temperature means more diversity but less coherence. We search for the optimal temperature in the range of [0, 1].</li>
+40 | <li>top_p: The parameter that controls the probability mass of the output tokens. Only tokens with a cumulative probability less than or equal to top-p are considered. A lower top-p means more diversity but less coherence. We search for the optimal top-p in the range of [0, 1].</li>
+41 | <li>max_tokens: The maximum number of tokens that can be generated for each output. We search for the optimal max length in the range of [50, 1000].</li>
+42 | <li>n: The number of responses to generate. We search for the optimal n in the range of [1, 100].</li>
+43 | <li>prompt: We use the template: &quot;{problem} Solve the problem carefully. Simplify your answer as much as possible. Put the final answer in \boxed{{}}.&quot; where {problem} will be replaced by the math problem instance.</li>
+44 | </ul>
+45 | <p>In this experiment, when n &gt; 1, we find the answer with highest votes among all the responses and then select it as the final answer to compare with the ground truth. For example, if n = 5 and 3 of the responses contain a final answer 301 while 2 of the responses contain a final answer 159, we choose 301 as the final answer. This can help with resolving potential errors due to randomness. We use the average accuracy and average inference cost as the metric to evaluate the performance over a dataset. The inference cost of a particular instance is measured by the price per 1K tokens and the number of tokens consumed.</p>
+46 | <h2 class="anchor anchorWithStickyNavbar_LWe7" id="experiment-results">Experiment Results<a href="#experiment-results" class="hash-link" aria-label="Direct link to Experiment Results" title="Direct link to Experiment Results">​</a></h2>
+47 | <p>The first figure in this blog post shows the average accuracy and average inference cost of each configuration on the level 2 Algebra test set.</p>
+48 | <p>Surprisingly, the tuned gpt-3.5-turbo model is selected as a better model and it vastly outperforms untuned gpt-4 in accuracy (92% vs. 70%) with equal or 2.5 times higher inference budget.
+49 | The same observation can be obtained on the level 3 Algebra test set.</p>
+50 | <p><img decoding="async" loading="lazy" alt="level 3 algebra" src="/autogen/assets/images/level3algebra-94e87a683ac8832ac7ae6f41f30131a4.png" width="575" height="469" class="img_ev3q"></p>
+51 | <p>However, the selected model changes on level 4 Algebra.</p>
+52 | <p><img decoding="async" loading="lazy" alt="level 4 algebra" src="/autogen/assets/images/level4algebra-492beb22490df30d6cc258f061912dcd.png" width="580" height="469" class="img_ev3q"></p>
+53 | <p>This time gpt-4 is selected as the best model. The tuned gpt-4 achieves much higher accuracy (56% vs. 44%) and lower cost than the untuned gpt-4.
+54 | On level 5 the result is similar.</p>
+55 | <p><img decoding="async" loading="lazy" alt="level 5 algebra" src="/autogen/assets/images/level5algebra-8fba701551334296d08580b4b489fe56.png" width="575" height="469" class="img_ev3q"></p>
+56 | <p>We can see that AutoGen has found different optimal model and inference parameters for each subset of a particular level, which shows that these parameters matter in cost-sensitive LLM applications and need to be carefully tuned or adapted.</p>
+57 | <p>An example notebook to run these experiments can be found at: <a href="https://github.com/microsoft/FLAML/blob/v1.2.1/notebook/autogen_chatgpt.ipynb" target="_blank" rel="noopener noreferrer">https://github.com/microsoft/FLAML/blob/v1.2.1/notebook/autogen_chatgpt.ipynb</a>. The experiments were run when AutoGen was a subpackage in FLAML.</p>
+58 | <h2 class="anchor anchorWithStickyNavbar_LWe7" id="analysis-and-discussion">Analysis and Discussion<a href="#analysis-and-discussion" class="hash-link" aria-label="Direct link to Analysis and Discussion" title="Direct link to Analysis and Discussion">​</a></h2>
+59 | <p>While gpt-3.5-turbo demonstrates competitive accuracy with voted answers in relatively easy algebra problems under the same inference budget, gpt-4 is a better choice for the most difficult problems. In general, through parameter tuning and model selection, we can identify the opportunity to save the expensive model for more challenging tasks, and improve the overall effectiveness of a budget-constrained system.</p>
+60 | <p>There are many other alternative ways of solving math problems, which we have not covered in this blog post. When there are choices beyond the inference parameters, they can be generally tuned via <a href="https://microsoft.github.io/FLAML/docs/Use-Cases/Tune-User-Defined-Function" target="_blank" rel="noopener noreferrer"><code>flaml.tune</code></a>.</p>
+61 | <p>The need for model selection, parameter tuning and cost saving is not specific to the math problems. The <a href="https://github.com/Significant-Gravitas/Auto-GPT" target="_blank" rel="noopener noreferrer">Auto-GPT</a> project is an example where high cost can easily prevent a generic complex task to be accomplished as it needs many LLM inference calls.</p>
+62 | <h2 class="anchor anchorWithStickyNavbar_LWe7" id="for-further-reading">For Further Reading<a href="#for-further-reading" class="hash-link" aria-label="Direct link to For Further Reading" title="Direct link to For Further Reading">​</a></h2>
+63 | <ul>
+64 | <li><a href="https://arxiv.org/abs/2303.04673" target="_blank" rel="noopener noreferrer">Research paper about the tuning technique</a></li>
+65 | <li><a href="/autogen/docs/Use-Cases/enhanced_inference">Documentation about inference tuning</a></li>
+66 | </ul>
+67 | <p><em>Do you have any experience to share about LLM applications? Do you like to see more support or research of LLM optimization or automation? Please join our <a href="https://discord.gg/pAbnFJrkgZ" target="_blank" rel="noopener noreferrer">Discord</a> server for discussion.</em></p></div><footer class="row docusaurus-mt-lg blogPostFooterDetailsFull_mRVl"><div class="col"><b>Tags:</b><ul class="tags_jXut padding--none margin-left--sm"><li class="tag_QGVx"><a class="tag_zVej tagRegular_sFm0" href="/autogen/blog/tags/llm">LLM</a></li><li class="tag_QGVx"><a class="tag_zVej tagRegular_sFm0" href="/autogen/blog/tags/gpt">GPT</a></li><li class="tag_QGVx"><a class="tag_zVej tagRegular_sFm0" href="/autogen/blog/tags/research">research</a></li></ul></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Blog post page navigation"><a class="pagination-nav__link pagination-nav__link--prev" href="/autogen/blog/2023/05/18/GPT-adaptive-humaneval"><div class="pagination-nav__sublabel">Newer Post</div><div class="pagination-nav__label">Achieve More, Pay Less - Use GPT-4 Smartly</div></a></nav></main><div class="col col--2"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#experiment-setup" class="table-of-contents__link toc-highlight">Experiment Setup</a></li><li><a href="#experiment-results" class="table-of-contents__link toc-highlight">Experiment Results</a></li><li><a href="#analysis-and-discussion" class="table-of-contents__link toc-highlight">Analysis and Discussion</a></li><li><a href="#for-further-reading" class="table-of-contents__link toc-highlight">For Further Reading</a></li></ul></div></div></div></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://discord.gg/pAbnFJrkgZ" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li><li class="footer__item"><a href="https://twitter.com/pyautogen" target="_blank" rel="noopener noreferrer" class="footer__link-item">Twitter<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 AutoGen Authors |  <a target="_blank" style="color:#10adff" href="https://go.microsoft.com/fwlink/?LinkId=521839">Privacy and Cookies</a></div></div></div></footer></div>
+68 | </body>
+69 | </html>
+70 | 
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_files.zip:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test_files.zip
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_llm.jpg:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test_llm.jpg
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_mskanji.csv:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test_mskanji.csv
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_notebook.ipynb:
+--------------------------------------------------------------------------------
+ 1 | {
+ 2 |     "cells": [
+ 3 |         {
+ 4 |             "cell_type": "markdown",
+ 5 |             "id": "0f61db80",
+ 6 |             "metadata": {},
+ 7 |             "source": [
+ 8 |                 "# Test Notebook"
+ 9 |             ]
+10 |         },
+11 |         {
+12 |             "cell_type": "code",
+13 |             "execution_count": 11,
+14 |             "id": "3f2a5bbd",
+15 |             "metadata": {},
+16 |             "outputs": [
+17 |                 {
+18 |                     "name": "stdout",
+19 |                     "output_type": "stream",
+20 |                     "text": [
+21 |                         "markitdown\n"
+22 |                     ]
+23 |                 }
+24 |             ],
+25 |             "source": [
+26 |                 "print('markitdown')"
+27 |             ]
+28 |         },
+29 |         {
+30 |             "cell_type": "markdown",
+31 |             "id": "9b9c0468",
+32 |             "metadata": {},
+33 |             "source": [
+34 |                 "## Code Cell Below"
+35 |             ]
+36 |         },
+37 |         {
+38 |             "cell_type": "code",
+39 |             "execution_count": 10,
+40 |             "id": "37d8088a",
+41 |             "metadata": {},
+42 |             "outputs": [
+43 |                 {
+44 |                     "name": "stdout",
+45 |                     "output_type": "stream",
+46 |                     "text": [
+47 |                         "42\n"
+48 |                     ]
+49 |                 }
+50 |             ],
+51 |             "source": [
+52 |                 "# comment in code\n",
+53 |                 "print(42)"
+54 |             ]
+55 |         },
+56 |         {
+57 |             "cell_type": "markdown",
+58 |             "id": "2e3177bd",
+59 |             "metadata": {},
+60 |             "source": [
+61 |                 "End\n",
+62 |                 "\n",
+63 |                 "---"
+64 |             ]
+65 |         }
+66 |     ],
+67 |     "metadata": {
+68 |         "kernelspec": {
+69 |             "display_name": "Python 3",
+70 |             "language": "python",
+71 |             "name": "python3"
+72 |         },
+73 |         "language_info": {
+74 |             "codemirror_mode": {
+75 |                 "name": "ipython",
+76 |                 "version": 3
+77 |             },
+78 |             "file_extension": ".py",
+79 |             "mimetype": "text/x-python",
+80 |             "name": "python",
+81 |             "nbconvert_exporter": "python",
+82 |             "pygments_lexer": "ipython3",
+83 |             "version": "3.12.8"
+84 |         },
+85 |         "title": "Test Notebook Title"
+86 |     },
+87 |     "nbformat": 4,
+88 |     "nbformat_minor": 5
+89 | }
+90 | 
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_outlook_msg.msg:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test_outlook_msg.msg
+
+
+--------------------------------------------------------------------------------
+/tests/test_files/test_with_comment.docx:
+--------------------------------------------------------------------------------
+https://raw.githubusercontent.com/microsoft/markitdown/main/tests/test_files/test_with_comment.docx
+
+
+--------------------------------------------------------------------------------
+/tests/test_markitdown.py:
+--------------------------------------------------------------------------------
+  1 | #!/usr/bin/env python3 -m pytest
+  2 | import io
+  3 | import os
+  4 | import shutil
+  5 | 
+  6 | import pytest
+  7 | import requests
+  8 | 
+  9 | from warnings import catch_warnings, resetwarnings
+ 10 | 
+ 11 | from markitdown import MarkItDown
+ 12 | 
+ 13 | skip_remote = (
+ 14 |     True if os.environ.get("GITHUB_ACTIONS") else False
+ 15 | )  # Don't run these tests in CI
+ 16 | 
+ 17 | 
+ 18 | # Don't run the llm tests without a key and the client library
+ 19 | skip_llm = False if os.environ.get("OPENAI_API_KEY") else True
+ 20 | try:
+ 21 |     import openai
+ 22 | except ModuleNotFoundError:
+ 23 |     skip_llm = True
+ 24 | 
+ 25 | # Skip exiftool tests if not installed
+ 26 | skip_exiftool = shutil.which("exiftool") is None
+ 27 | 
+ 28 | TEST_FILES_DIR = os.path.join(os.path.dirname(__file__), "test_files")
+ 29 | 
+ 30 | JPG_TEST_EXIFTOOL = {
+ 31 |     "Author": "AutoGen Authors",
+ 32 |     "Title": "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation",
+ 33 |     "Description": "AutoGen enables diverse LLM-based applications",
+ 34 |     "ImageSize": "1615x1967",
+ 35 |     "DateTimeOriginal": "2024:03:14 22:10:00",
+ 36 | }
+ 37 | 
+ 38 | PDF_TEST_URL = "https://arxiv.org/pdf/2308.08155v2.pdf"
+ 39 | PDF_TEST_STRINGS = [
+ 40 |     "While there is contemporaneous exploration of multi-agent approaches"
+ 41 | ]
+ 42 | 
+ 43 | YOUTUBE_TEST_URL = "https://www.youtube.com/watch?v=V2qZ_lgxTzg"
+ 44 | YOUTUBE_TEST_STRINGS = [
+ 45 |     "## AutoGen FULL Tutorial with Python (Step-By-Step)",
+ 46 |     "This is an intermediate tutorial for installing and using AutoGen locally",
+ 47 |     "PT15M4S",
+ 48 |     "the model we're going to be using today is GPT 3.5 turbo",  # From the transcript
+ 49 | ]
+ 50 | 
+ 51 | XLSX_TEST_STRINGS = [
+ 52 |     "## 09060124-b5e7-4717-9d07-3c046eb",
+ 53 |     "6ff4173b-42a5-4784-9b19-f49caff4d93d",
+ 54 |     "affc7dad-52dc-4b98-9b5d-51e65d8a8ad0",
+ 55 | ]
+ 56 | 
+ 57 | XLS_TEST_STRINGS = [
+ 58 |     "## 09060124-b5e7-4717-9d07-3c046eb",
+ 59 |     "6ff4173b-42a5-4784-9b19-f49caff4d93d",
+ 60 |     "affc7dad-52dc-4b98-9b5d-51e65d8a8ad0",
+ 61 | ]
+ 62 | 
+ 63 | DOCX_TEST_STRINGS = [
+ 64 |     "314b0a30-5b04-470b-b9f7-eed2c2bec74a",
+ 65 |     "49e168b7-d2ae-407f-a055-2167576f39a1",
+ 66 |     "## d666f1f7-46cb-42bd-9a39-9a39cf2a509f",
+ 67 |     "# Abstract",
+ 68 |     "# Introduction",
+ 69 |     "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation",
+ 70 | ]
+ 71 | 
+ 72 | MSG_TEST_STRINGS = [
+ 73 |     "# Email Message",
+ 74 |     "**From:** test.sender@example.com",
+ 75 |     "**To:** test.recipient@example.com",
+ 76 |     "**Subject:** Test Email Message",
+ 77 |     "## Content",
+ 78 |     "This is the body of the test email message",
+ 79 | ]
+ 80 | 
+ 81 | DOCX_COMMENT_TEST_STRINGS = [
+ 82 |     "314b0a30-5b04-470b-b9f7-eed2c2bec74a",
+ 83 |     "49e168b7-d2ae-407f-a055-2167576f39a1",
+ 84 |     "## d666f1f7-46cb-42bd-9a39-9a39cf2a509f",
+ 85 |     "# Abstract",
+ 86 |     "# Introduction",
+ 87 |     "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation",
+ 88 |     "This is a test comment. 12df-321a",
+ 89 |     "Yet another comment in the doc. 55yiyi-asd09",
+ 90 | ]
+ 91 | 
+ 92 | PPTX_TEST_STRINGS = [
+ 93 |     "2cdda5c8-e50e-4db4-b5f0-9722a649f455",
+ 94 |     "04191ea8-5c73-4215-a1d3-1cfb43aaaf12",
+ 95 |     "44bf7d06-5e7a-4a40-a2e1-a2e42ef28c8a",
+ 96 |     "1b92870d-e3b5-4e65-8153-919f4ff45592",
+ 97 |     "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation",
+ 98 |     "a3f6004b-6f4f-4ea8-bee3-3741f4dc385f",  # chart title
+ 99 |     "2003",  # chart value
+100 | ]
+101 | 
+102 | BLOG_TEST_URL = "https://microsoft.github.io/autogen/blog/2023/04/21/LLM-tuning-math"
+103 | BLOG_TEST_STRINGS = [
+104 |     "Large language models (LLMs) are powerful tools that can generate natural language texts for various applications, such as chatbots, summarization, translation, and more. GPT-4 is currently the state of the art LLM in the world. Is model selection irrelevant? What about inference parameters?",
+105 |     "an example where high cost can easily prevent a generic complex",
+106 | ]
+107 | 
+108 | 
+109 | RSS_TEST_STRINGS = [
+110 |     "The Official Microsoft Blog",
+111 |     "In the case of AI, it is absolutely true that the industry is moving incredibly fast",
+112 | ]
+113 | 
+114 | 
+115 | WIKIPEDIA_TEST_URL = "https://en.wikipedia.org/wiki/Microsoft"
+116 | WIKIPEDIA_TEST_STRINGS = [
+117 |     "Microsoft entered the operating system (OS) business in 1980 with its own version of [Unix]",
+118 |     'Microsoft was founded by [Bill Gates](/wiki/Bill_Gates "Bill Gates")',
+119 | ]
+120 | WIKIPEDIA_TEST_EXCLUDES = [
+121 |     "You are encouraged to create an account and log in",
+122 |     "154 languages",
+123 |     "move to sidebar",
+124 | ]
+125 | 
+126 | SERP_TEST_URL = "https://www.bing.com/search?q=microsoft+wikipedia"
+127 | SERP_TEST_STRINGS = [
+128 |     "](https://en.wikipedia.org/wiki/Microsoft",
+129 |     "Microsoft Corporation is **an American multinational corporation and technology company headquartered** in Redmond",
+130 |     "1995–2007: Foray into the Web, Windows 95, Windows XP, and Xbox",
+131 | ]
+132 | SERP_TEST_EXCLUDES = [
+133 |     "https://www.bing.com/ck/a?!&&p=",
+134 |     "data:image/svg+xml,%3Csvg%20width%3D",
+135 | ]
+136 | 
+137 | CSV_CP932_TEST_STRINGS = [
+138 |     "名前,年齢,住所",
+139 |     "佐藤太郎,30,東京",
+140 |     "三木英子,25,大阪",
+141 |     "髙橋淳,35,名古屋",
+142 | ]
+143 | 
+144 | LLM_TEST_STRINGS = [
+145 |     "5bda1dd6",
+146 | ]
+147 | 
+148 | JSON_TEST_STRINGS = [
+149 |     "5b64c88c-b3c3-4510-bcb8-da0b200602d8",
+150 |     "9700dc99-6685-40b4-9a3a-5e406dcb37f3",
+151 | ]
+152 | 
+153 | 
+154 | # --- Helper Functions ---
+155 | def validate_strings(result, expected_strings, exclude_strings=None):
+156 |     """Validate presence or absence of specific strings."""
+157 |     text_content = result.text_content.replace("\\", "")
+158 |     for string in expected_strings:
+159 |         assert string in text_content
+160 |     if exclude_strings:
+161 |         for string in exclude_strings:
+162 |             assert string not in text_content
+163 | 
+164 | 
+165 | @pytest.mark.skipif(
+166 |     skip_remote,
+167 |     reason="do not run tests that query external urls",
+168 | )
+169 | def test_markitdown_remote() -> None:
+170 |     markitdown = MarkItDown()
+171 | 
+172 |     # By URL
+173 |     result = markitdown.convert(PDF_TEST_URL)
+174 |     for test_string in PDF_TEST_STRINGS:
+175 |         assert test_string in result.text_content
+176 | 
+177 |     # By stream
+178 |     response = requests.get(PDF_TEST_URL)
+179 |     result = markitdown.convert_stream(
+180 |         io.BytesIO(response.content), file_extension=".pdf", url=PDF_TEST_URL
+181 |     )
+182 |     for test_string in PDF_TEST_STRINGS:
+183 |         assert test_string in result.text_content
+184 | 
+185 |     # Youtube
+186 |     # TODO: This test randomly fails for some reason. Haven't been able to repro it yet. Disabling until I can debug the issue
+187 |     # result = markitdown.convert(YOUTUBE_TEST_URL)
+188 |     # for test_string in YOUTUBE_TEST_STRINGS:
+189 |     #     assert test_string in result.text_content
+190 | 
+191 | 
+192 | def test_markitdown_local() -> None:
+193 |     markitdown = MarkItDown()
+194 | 
+195 |     # Test XLSX processing
+196 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.xlsx"))
+197 |     validate_strings(result, XLSX_TEST_STRINGS)
+198 | 
+199 |     # Test XLS processing
+200 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.xls"))
+201 |     for test_string in XLS_TEST_STRINGS:
+202 |         text_content = result.text_content.replace("\\", "")
+203 |         assert test_string in text_content
+204 | 
+205 |     # Test DOCX processing
+206 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.docx"))
+207 |     validate_strings(result, DOCX_TEST_STRINGS)
+208 | 
+209 |     # Test DOCX processing, with comments
+210 |     result = markitdown.convert(
+211 |         os.path.join(TEST_FILES_DIR, "test_with_comment.docx"),
+212 |         style_map="comment-reference => ",
+213 |     )
+214 |     validate_strings(result, DOCX_COMMENT_TEST_STRINGS)
+215 | 
+216 |     # Test DOCX processing, with comments and setting style_map on init
+217 |     markitdown_with_style_map = MarkItDown(style_map="comment-reference => ")
+218 |     result = markitdown_with_style_map.convert(
+219 |         os.path.join(TEST_FILES_DIR, "test_with_comment.docx")
+220 |     )
+221 |     validate_strings(result, DOCX_COMMENT_TEST_STRINGS)
+222 | 
+223 |     # Test PPTX processing
+224 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.pptx"))
+225 |     validate_strings(result, PPTX_TEST_STRINGS)
+226 | 
+227 |     # Test HTML processing
+228 |     result = markitdown.convert(
+229 |         os.path.join(TEST_FILES_DIR, "test_blog.html"), url=BLOG_TEST_URL
+230 |     )
+231 |     validate_strings(result, BLOG_TEST_STRINGS)
+232 | 
+233 |     # Test ZIP file processing
+234 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test_files.zip"))
+235 |     validate_strings(result, XLSX_TEST_STRINGS)
+236 | 
+237 |     # Test Wikipedia processing
+238 |     result = markitdown.convert(
+239 |         os.path.join(TEST_FILES_DIR, "test_wikipedia.html"), url=WIKIPEDIA_TEST_URL
+240 |     )
+241 |     text_content = result.text_content.replace("\\", "")
+242 |     validate_strings(result, WIKIPEDIA_TEST_STRINGS, WIKIPEDIA_TEST_EXCLUDES)
+243 | 
+244 |     # Test Bing processing
+245 |     result = markitdown.convert(
+246 |         os.path.join(TEST_FILES_DIR, "test_serp.html"), url=SERP_TEST_URL
+247 |     )
+248 |     text_content = result.text_content.replace("\\", "")
+249 |     validate_strings(result, SERP_TEST_STRINGS, SERP_TEST_EXCLUDES)
+250 | 
+251 |     # Test RSS processing
+252 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test_rss.xml"))
+253 |     text_content = result.text_content.replace("\\", "")
+254 |     for test_string in RSS_TEST_STRINGS:
+255 |         assert test_string in text_content
+256 | 
+257 |     ## Test non-UTF-8 encoding
+258 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test_mskanji.csv"))
+259 |     validate_strings(result, CSV_CP932_TEST_STRINGS)
+260 | 
+261 |     # Test MSG (Outlook email) processing
+262 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test_outlook_msg.msg"))
+263 |     validate_strings(result, MSG_TEST_STRINGS)
+264 | 
+265 |     # Test JSON processing
+266 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.json"))
+267 |     validate_strings(result, JSON_TEST_STRINGS)
+268 | 
+269 |     # Test input with leading blank characters
+270 |     input_data = b"   \n\n\n<html><body><h1>Test</h1></body></html>"
+271 |     result = markitdown.convert_stream(io.BytesIO(input_data))
+272 |     assert "# Test" in result.text_content
+273 | 
+274 | 
+275 | @pytest.mark.skipif(
+276 |     skip_exiftool,
+277 |     reason="do not run if exiftool is not installed",
+278 | )
+279 | def test_markitdown_exiftool() -> None:
+280 |     # Test the automatic discovery of exiftool throws a warning
+281 |     # and is disabled
+282 |     try:
+283 |         with catch_warnings(record=True) as w:
+284 |             markitdown = MarkItDown()
+285 |             result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.jpg"))
+286 |             assert len(w) == 1
+287 |             assert w[0].category is DeprecationWarning
+288 |             assert result.text_content.strip() == ""
+289 |     finally:
+290 |         resetwarnings()
+291 | 
+292 |     # Test explicitly setting the location of exiftool
+293 |     which_exiftool = shutil.which("exiftool")
+294 |     markitdown = MarkItDown(exiftool_path=which_exiftool)
+295 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.jpg"))
+296 |     for key in JPG_TEST_EXIFTOOL:
+297 |         target = f"{key}: {JPG_TEST_EXIFTOOL[key]}"
+298 |         assert target in result.text_content
+299 | 
+300 |     # Test setting the exiftool path through an environment variable
+301 |     os.environ["EXIFTOOL_PATH"] = which_exiftool
+302 |     markitdown = MarkItDown()
+303 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test.jpg"))
+304 |     for key in JPG_TEST_EXIFTOOL:
+305 |         target = f"{key}: {JPG_TEST_EXIFTOOL[key]}"
+306 |         assert target in result.text_content
+307 | 
+308 | 
+309 | def test_markitdown_deprecation() -> None:
+310 |     try:
+311 |         with catch_warnings(record=True) as w:
+312 |             test_client = object()
+313 |             markitdown = MarkItDown(mlm_client=test_client)
+314 |             assert len(w) == 1
+315 |             assert w[0].category is DeprecationWarning
+316 |             assert markitdown._llm_client == test_client
+317 |     finally:
+318 |         resetwarnings()
+319 | 
+320 |     try:
+321 |         with catch_warnings(record=True) as w:
+322 |             markitdown = MarkItDown(mlm_model="gpt-4o")
+323 |             assert len(w) == 1
+324 |             assert w[0].category is DeprecationWarning
+325 |             assert markitdown._llm_model == "gpt-4o"
+326 |     finally:
+327 |         resetwarnings()
+328 | 
+329 |     try:
+330 |         test_client = object()
+331 |         markitdown = MarkItDown(mlm_client=test_client, llm_client=test_client)
+332 |         assert False
+333 |     except ValueError:
+334 |         pass
+335 | 
+336 |     try:
+337 |         markitdown = MarkItDown(mlm_model="gpt-4o", llm_model="gpt-4o")
+338 |         assert False
+339 |     except ValueError:
+340 |         pass
+341 | 
+342 | 
+343 | @pytest.mark.skipif(
+344 |     skip_llm,
+345 |     reason="do not run llm tests without a key",
+346 | )
+347 | def test_markitdown_llm() -> None:
+348 |     client = openai.OpenAI()
+349 |     markitdown = MarkItDown(llm_client=client, llm_model="gpt-4o")
+350 | 
+351 |     result = markitdown.convert(os.path.join(TEST_FILES_DIR, "test_llm.jpg"))
+352 | 
+353 |     for test_string in LLM_TEST_STRINGS:
+354 |         assert test_string in result.text_content
+355 | 
+356 |     # This is not super precise. It would also accept "red square", "blue circle",
+357 |     # "the square is not blue", etc. But it's sufficient for this test.
+358 |     for test_string in ["red", "circle", "blue", "square"]:
+359 |         assert test_string in result.text_content.lower()
+360 | 
+361 | 
+362 | if __name__ == "__main__":
+363 |     """Runs this file's tests from the command line."""
+364 |     # test_markitdown_remote()
+365 |     # test_markitdown_local()
+366 |     test_markitdown_exiftool()
+367 |     # test_markitdown_deprecation()
+368 |     # test_markitdown_llm()
+369 | 
+
+
+--------------------------------------------------------------------------------

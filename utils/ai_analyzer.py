@@ -48,7 +48,7 @@ def analyze_document(text_content, analysis_options=None):
 - 使用恰当的专业术语和分析方法
 - 分析要具体且有见地，避免泛泛而谈"""
 
-        app.logger.info("Sending request to OpenAI for document analysis")
+        app.logger.info("📤 Sending request to OpenAI for document analysis")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -59,11 +59,11 @@ def analyze_document(text_content, analysis_options=None):
                 {"role": "user", "content": text_content}
             ],
             temperature=0.7,
-            max_tokens=4000
+            max_tokens=4096
         )
 
         analysis = response.choices[0].message.content.strip()
-        app.logger.info("Received response from OpenAI")
+        app.logger.info("📥 Received response from OpenAI")
 
         # Clean up the analysis text
         # Remove any numbered prefixes and clean up formatting
@@ -77,11 +77,11 @@ def analyze_document(text_content, analysis_options=None):
         sections_to_check = ['摘要', '人物分析', '情节分析', '主题分析', '可读性评估', '情感分析', '风格和一致性']
         for section in sections_to_check:
             if f"{section}：\n暂无内容" in cleaned_analysis:
-                app.logger.warning(f"Empty content detected in section: {section}")
+                app.logger.warning(f"⚠️ Empty content detected in section: {section}")
 
         return {
             'summary': cleaned_analysis
         }
     except Exception as e:
-        app.logger.error(f"Error analyzing document: {str(e)}")
+        app.logger.error(f"❌ Error analyzing document: {str(e)}")
         raise Exception(f"Error analyzing document: {str(e)}")
