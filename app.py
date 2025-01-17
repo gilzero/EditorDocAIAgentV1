@@ -1,15 +1,28 @@
+"""
+File Overview:
+This module sets up the Flask application and configures the SQLAlchemy database for the Dreamer Document AI project.
+
+File Path:
+app.py
+"""
+
 import os
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 
 class Base(DeclarativeBase):
+    """Base class for SQLAlchemy models."""
     pass
 
+# Initialize SQLAlchemy with a custom model base class
 db = SQLAlchemy(model_class=Base)
+
+# Create a Flask application instance
 app = Flask(__name__)
 
 # Configure max upload size
@@ -22,8 +35,8 @@ app.config['DEBUG'] = False
 # Use a strong secret key
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# Configure the database to use SQLite
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///dreamer_document_ai.db'
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,

@@ -1,7 +1,13 @@
+"""
+@fileoverview This module defines the SQLAlchemy models for the Dreamer Document AI project.
+@filepath models.py
+"""
+
 from datetime import datetime
 from app import db
 
 class Document(db.Model):
+    """Model representing a document uploaded by the user."""
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)
     original_filename = db.Column(db.String(255), nullable=False)
@@ -12,6 +18,7 @@ class Document(db.Model):
     analysis_summary = db.Column(db.Text)
 
 class Payment(db.Model):
+    """Model representing a payment transaction associated with a document."""
     id = db.Column(db.Integer, primary_key=True)
     stripe_payment_id = db.Column(db.String(255), unique=True, nullable=False)
     amount = db.Column(db.Integer, nullable=False)  # Amount in cents

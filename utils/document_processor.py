@@ -1,10 +1,27 @@
+"""
+@fileoverview This module processes documents using the MarkItDown library and extracts metadata.
+@filepath utils/document_processor.py
+"""
+
 import logging
 from markitdown import MarkItDown
 from app import app
 from datetime import datetime
 
 def process_document(file_path):
-    """Process document using MarkItDown library."""
+    """
+    Process a document using the MarkItDown library and extract its metadata.
+
+    Args:
+        file_path (str): The path to the document file to be processed.
+
+    Returns:
+        dict: A dictionary containing the extracted metadata, including text content, author, 
+              creation date, modification date, title, and page count.
+
+    Raises:
+        Exception: If there is an error during document processing or metadata extraction.
+    """
     try:
         app.logger.info(f"Starting to process document: {file_path}")
         md = MarkItDown()
@@ -57,7 +74,15 @@ def process_document(file_path):
         raise Exception(f"Failed to process document: {str(e)}")
 
 def format_date(date_str):
-    """Format date string to a consistent format or return 'Unknown'."""
+    """
+    Format a date string to a consistent format or return 'Unknown' if parsing fails.
+
+    Args:
+        date_str (str): The date string to be formatted.
+
+    Returns:
+        str: The formatted date string in 'YYYY-MM-DD' format or 'Unknown' if parsing fails.
+    """
     if not date_str:
         return 'Unknown'
     try:
