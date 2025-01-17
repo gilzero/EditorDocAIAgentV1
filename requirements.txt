@@ -1,0 +1,9 @@
+email-validator>=2.2.0
+flask>=3.1.0
+flask-sqlalchemy>=3.1.1
+markitdown>=0.0.1a3
+openai>=1.58.1
+psycopg2-binary>=2.9.10
+sqlalchemy>=2.0.36
+stripe>=11.4.1
+werkzeug>=3.1.3

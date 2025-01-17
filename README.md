@@ -1,4 +1,4 @@
-# Dreamer Document AI Agent v0
+# Dreamer Document AI Agent v1
 
 A Flask-based web application that uses AI to analyze PDF and Word documents with a modern, user-friendly interface.
 
