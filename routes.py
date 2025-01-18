@@ -286,7 +286,9 @@ def payment_success() -> Tuple[Response, int]:
         db.session.add(payment)
 
         # Read document content from a file
-        text_content_file_path = os.path.join(app.config["DEBUG_DIR"], "text_content.txt")
+        text_content_file_path = os.path.join(
+            app.config["DEBUG_DIR"], "text_content.txt"
+        )
         with open(text_content_file_path, "r", encoding="utf-8") as file:
             text_content = file.read()
 

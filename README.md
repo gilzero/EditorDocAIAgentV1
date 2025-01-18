@@ -1,125 +1,121 @@
 # Dreamer Document AI Agent v1
 
-A Flask-based web application that uses AI to analyze PDF and Word documents with a modern, user-friendly interface.
+## Overview
+Dreamer Document AI Agent is a Flask-based web application designed for AI-powered analysis of PDF and Word documents. The application provides a seamless user experience for document analysis, with modern UI features and secure payment integration.
 
-## Features
+## Key Features
 
-### Document Processing
-- Supports PDF (.pdf) and Word (.docx) document uploads
-- Maximum file size: 20MB
-- Unicode filename support (including Chinese characters)
-- Secure file handling and processing
-- Uses MarkItDown library for data ingestion and text extraction
+### Document Upload and Processing
+- Supports PDF (.pdf) and Word (.docx) files.
+- Maximum upload size: 20MB.
+- Unicode filename support, including non-Latin characters.
+- Secure file handling with automatic cleanup.
 
-### AI Analysis
-- Powered by OpenAI's GPT-4o model
-- Provides comprehensive document analysis including:
-  - General document summary (3-5 sentences)
-  - Character analysis
-  - Plot analysis
-  - Thematic analysis
-  - Readability assessment
-  - Sentiment analysis
-  - Style consistency evaluation
+### AI-Powered Analysis
+- Uses OpenAI's GPT-4 model for:
+  - Document summarization.
+  - Character and plot analysis.
+  - Thematic and readability assessments.
+  - Sentiment and style analysis.
 
 ### User Interface
-- Clean, modern interface with paper-like styling
-- Drag-and-drop file upload
-- Progress indicators during processing
-- Dark/light mode support
-- Toast notifications for user feedback
-- Responsive design for mobile and desktop
-- Detailed metadata display
-- Results displayed in organized, collapsible sections
+- Responsive and accessible design with light/dark theme toggle.
+- Drag-and-drop file upload functionality.
+- Detailed document metadata display.
+- Step-by-step progress indicators.
+- Interactive and collapsible result sections.
 
 ### Payment Integration
-- Stripe payment integration
-- Supports multiple payment methods
-- Cost: ¥3 per document analysis
-- Secure payment processing
+- Stripe integration for secure payments.
+- Pricing tiers based on character count.
+- Minimum charge of ¥3.50.
+- Supports multiple payment methods.
 
-## Technical Stack
+## Technology Stack
 
 ### Backend
-- Python/Flask
-- SQLAlchemy for database management
-- PostgreSQL database
+- Flask (Python)
+- SQLAlchemy ORM
 - OpenAI API integration
-- Stripe API for payments
+- Alembic for database migrations
 
 ### Frontend
-- HTML5/CSS3/JavaScript
-- Bootstrap for responsive design
-- Feather Icons
-- Custom CSS with theme support
-- Modern UI components
+- HTML5, CSS3, JavaScript
+- Bootstrap for responsive layout
+- Feather Icons and custom CSS
 
-### Key Libraries
-- MarkItDown for document processing
-- Flask-SQLAlchemy for ORM
-- OpenAI for AI analysis
-- Stripe for payment processing
+### Additional Libraries
+- MarkItDown for text extraction
+- Toastify for notifications
+- Stripe.js for payment handling
 
-## Installation
+## Setup and Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/gilzero/DreamerDocumentAI.git
-cd DreamerDocumentAI
-```
+### Prerequisites
+- Python 3.8 or later
+- PostgreSQL database
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+### Installation Steps
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/gilzero/EditorDocAIAgentV1.git
+   cd EditorDocAIAgentV1
+   ```
 
-3. Set up environment variables:
-```bash
-FLASK_SECRET_KEY=<your-secret-key>
-DATABASE_URL=<your-database-url>
-OPENAI_API_KEY=<your-openai-api-key>
-STRIPE_SECRET_KEY=<your-stripe-secret-key>
-STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
-```
+2. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-4. Initialize the database:
-```bash
-flask db upgrade
-```
+3. **Set Up Environment Variables:**
+   Create a `.env` file with the following:
+   ```plaintext
+   FLASK_SECRET_KEY=<your-secret-key>
+   DATABASE_URL=<your-database-url>
+   OPENAI_API_KEY=<your-openai-api-key>
+   STRIPE_SECRET_KEY=<your-stripe-secret-key>
+   STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
+   ```
 
-5. Run the application:
-```bash
-python main.py
-```
+4. **Run Database Migrations:**
+   ```bash
+   flask db upgrade
+   ```
 
-The application will be available at `http://localhost:5000`
+5. **Start the Application:**
+   ```bash
+   python main.py
+   ```
 
-## Error Handling
-- Comprehensive error handling system
-- User-friendly error messages
-- Handles various edge cases:
-  - Empty files
-  - Invalid formats
-  - File size limits
-  - Processing errors
-  - Payment failures
+   The application will be available at [http://localhost:5001](http://localhost:5001).
+
+## Deployment
+- Use Gunicorn as the WSGI server for production.
+- Configure a reverse proxy (e.g., Nginx) for enhanced scalability and security.
+
+## Testing
+- Implement unit and integration tests for key functionalities.
+- Use tools like Pytest for automated testing.
 
 ## Security Features
-- Secure file handling
-- Input validation
-- Secure payment processing
-- Environmental variable protection
-- SQL injection prevention
-- XSS protection
-
-## License
-[Include License Information]
+- Input validation and secure file handling.
+- Payment validation on the server side.
+- Use of environment variables for sensitive configurations.
+- SQL injection and XSS protection.
 
 ## Contributing
-[Include Contributing Guidelines]
+Contributions are welcome! Please fork the repository and create a pull request for any proposed changes.
+
+## License
+[MIT License](LICENSE)
 
 ## Author
-[Your Name/Organization]
+Weiming Chen
 
----
-For more information or support, please [create an issue](https://github.com/gilzero/DreamerDocumentAI/issues) or contact the maintainers.
+## Organization
+Weiming AI (https://weiming.ai)
+Dreamer Studio (https://dreamer.xyz)
+
+## Contact
+For inquiries or support, please contact alan at dreamer.xyz.
+
