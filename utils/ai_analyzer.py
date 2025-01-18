@@ -11,6 +11,9 @@ dotenv.load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
+# utils/ai_analyzer.py
+
+
 def analyze_document(text_content, analysis_options=None):
     """Analyze document content using OpenAI GPT-4o."""
     try:
@@ -42,10 +45,10 @@ def analyze_document(text_content, analysis_options=None):
         # Build dynamic system prompt based on selected sections
         system_prompt = """
                         你是一位专业的文档分析专家。请用中文分析这篇文档，确保每个部分都提供详细的分析（至少2-3段）：
-                        
+
                             摘要：
                             [请用3-5句话简明扼要地总结文档的关键点和主要信息]
-                        
+
                         """
         # Add selected sections to prompt
         for section in sections:
@@ -63,13 +66,13 @@ def analyze_document(text_content, analysis_options=None):
 
         app.logger.info("📤 Sending request to OpenAI for document analysis")
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=app.config["OPENAI_MODEL_NAME"],
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text_content},
             ],
-            temperature=0.7,
-            max_tokens=4096,
+            temperature=app.config["OPENAI_TEMPERATURE"],
+            max_tokens=app.config["OPENAI_MAX_TOKENS"],
         )
 
         analysis = response.choices[0].message.content.strip()

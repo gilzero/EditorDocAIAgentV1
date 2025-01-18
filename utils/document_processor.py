@@ -38,19 +38,6 @@ def process_document(file_path):
         text_content = getattr(result, "text_content", "")
         app.logger.info("📄 Text content extraction completed")
 
-        # Save the result object to a text file for debugging
-        # result_file_path = os.path.join("debug", "result.txt")
-        # try:
-        #     with open(result_file_path, "w", encoding="utf-8") as result_file:
-        #         result_file.write(str(result))
-        #     app.logger.info(
-        #         f"✅ Result object saved successfully to {result_file_path}"
-        #     )
-        # except Exception as e:
-        #     app.logger.error(
-        #         f"❌ Failed to save result object to {result_file_path}: {str(e)}"
-        #     )
-
         # Save the text content to a text file for debugging
         text_content_file_path = os.path.join("debug", "text_content.txt")
         try:
@@ -87,9 +74,9 @@ def process_document(file_path):
             "text_content": text_content,
             "char_count": char_count,
             "title": meta_title,
-            "date_of_upload": meta_date
+            "date_of_upload": meta_date,
         }
-        
+
         return document_metadata
 
     except Exception as e:

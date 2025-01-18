@@ -17,14 +17,40 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+
 class Base(DeclarativeBase):
     pass
+
 
 # Initialize Flask app
 app = Flask(__name__)
 
+
+# CORS Configuration
+app.config["CORS_HEADERS"] = "Content-Type"
+app.config["CORS_RESOURCES"] = {r"/*": {"origins": "*"}}
+
 # Configure max upload size
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB max file size
+
+
+# Add these lines to configure the OpenAI model parameters
+app.config["OPENAI_MODEL_NAME"] = "gpt-4o"
+app.config["OPENAI_TEMPERATURE"] = 0.7
+app.config["OPENAI_MAX_TOKENS"] = 4096
+
+# app.py
+
+# Add these lines to configure the pricing tiers and minimum charge
+app.config["PRICING_TIERS"] = [
+    {"max_chars": 1000, "price": 100},
+    {"max_chars": 5000, "price": 200},
+    {"max_chars": 10000, "price": 300},
+    {"max_chars": 50000, "price": 500},
+    {"max_chars": 100000, "price": 800},
+    {"max_chars": float("inf"), "price": 1000},
+]
+app.config["MIN_CHARGE"] = 350  # ¥3.50 in cents
 
 # Use a strong secret key
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
