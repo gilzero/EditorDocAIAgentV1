@@ -1,5 +1,5 @@
 """
-@fileoverview Routes and API endpoints for the Document AI Analysis service
+@file-overview Routes and API endpoints for the Document AI Analysis service
 @filepath routes.py
 
 This module handles all the HTTP routes for the document analysis application.
@@ -17,12 +17,10 @@ The module integrates with:
 """
 
 import os
-import logging
 import uuid
-from typing import Tuple, Dict, Any, Optional
+from typing import Tuple, Dict, Any
 from datetime import datetime
-from flask import render_template, request, jsonify, redirect, url_for, Response
-from werkzeug.utils import secure_filename
+from flask import render_template, request, jsonify, Response
 from werkzeug.datastructures import FileStorage
 from app import app, db
 from models import Document, Payment
@@ -63,7 +61,8 @@ def _allowed_file(filename: str) -> bool:
     Returns:
         bool: True if file extension is allowed, False otherwise
     """
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    allowed_extensions = app.config["ALLOWED_EXTENSIONS"]
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed_extensions
 
 
 def _generate_unique_filename(original_filename: str) -> Tuple[str, str]:
@@ -185,7 +184,7 @@ def upload_file() -> Tuple[Response, int]:
 
         # Generate unique filename and save file
         unique_filename, _ = _generate_unique_filename(file.filename)
-        save_path = os.path.join(UPLOAD_FOLDER, unique_filename)
+        save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
         _save_uploaded_file(file, save_path)
 
         # Process document and get metadata
@@ -226,18 +225,21 @@ def upload_file() -> Tuple[Response, int]:
         payment_data = _process_payment(analysis_cost)
 
         # Return comprehensive document information
-        return jsonify(
-            {
-                "document_id": document.id,
-                "title": document_metadata["title"],
-                "original_filename": file.filename,
-                "char_count": char_count,
-                "file_size": os.path.getsize(save_path),
-                "mime_type": file.content_type,
-                "upload_date": formatted_date,
-                "analysis_cost": analysis_cost,
-                **payment_data,
-            }
+        return (
+            jsonify(
+                {
+                    "document_id": document.id,
+                    "title": document_metadata["title"],
+                    "original_filename": file.filename,
+                    "char_count": char_count,
+                    "file_size": os.path.getsize(save_path),
+                    "mime_type": file.content_type,
+                    "upload_date": formatted_date,
+                    "analysis_cost": analysis_cost,
+                    **payment_data,
+                }
+            ),
+            200,
         )
 
     except OSError as e:
@@ -289,7 +291,8 @@ def payment_success() -> Tuple[Response, int]:
         document.analysis_summary = analysis_result["summary"]
         db.session.commit()
 
-        return jsonify({"success": True, "analysis": analysis_result})
+        app.logger.info(f"✅ Document analysis completed for {document.id}")
+        return jsonify({"success": True, "analysis": analysis_result}), 200
 
     except Exception as e:
         app.logger.error(f"❌ Payment processing error: {str(e)}")

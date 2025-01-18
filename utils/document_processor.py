@@ -1,17 +1,19 @@
 """
-@fileoverview This module processes documents using the MarkItDown library.
+@file-overview This module processes documents using the MarkItDown library.
 @filepath utils/document_processor.py
 """
 
 # Import the MarkItDown library and the Flask app
-from markitdown import MarkItDown
+from markitdown import MarkItDown, FileConversionException
 from app import app
 import os
+from pdfminer.psexceptions import PSSyntaxError
+from pypdf import PdfReader
 
 
 def process_document(file_path):
     """
-    Process a document using the MarkItDown library.
+    Process a document using multiple PDF processing libraries with fallback options.
 
     Args:
         file_path (str): The path to the document file to be processed.
@@ -20,65 +22,86 @@ def process_document(file_path):
         dict: A dictionary containing the text content and metadata of the document.
 
     Raises:
-        Exception: If there is an error during document processing.
+        Exception: If all document processing methods fail.
     """
 
-    # create debug directory if it does not exist
+    # Create debug directory if it doesn't exist
     debug_dir = os.path.join(app.root_path, "debug")
     if not os.path.exists(debug_dir):
         os.makedirs(debug_dir)
 
+    text_content = None
+    error_messages = []
+
+    # Try MarkItDown first
     try:
-        app.logger.info(f"🚀 Starting to process document: {file_path}")
+        app.logger.info(f"🚀 Attempting to process document with MarkItDown: {file_path}")
         md = MarkItDown()
         result = md.convert(file_path)
-        app.logger.info("✅ Document conversion successful")
-
-        # Return only the text content
         text_content = getattr(result, "text_content", "")
-        app.logger.info("📄 Text content extraction completed")
+        app.logger.info("✅ MarkItDown conversion successful")
 
-        # Save the text content to a text file for debugging
-        text_content_file_path = os.path.join("debug", "text_content.txt")
+    except (FileConversionException, PSSyntaxError) as e:
+        error_messages.append(f"MarkItDown failed: {str(e)}")
+        app.logger.warning(f"⚠️ MarkItDown failed, attempting pypdf fallback: {str(e)}")
+
+        # Try pypdf as fallback
         try:
-            with open(text_content_file_path, "w", encoding="utf-8") as text_file:
-                text_file.write(text_content)
-            app.logger.info(
-                f"✅ Text content saved successfully to {text_content_file_path}"
-            )
+            text_content = _extract_text_with_pypdf(file_path)
+            app.logger.info("✅ pypdf fallback successful")
         except Exception as e:
-            app.logger.error(
-                f"❌ Failed to save text content to {text_content_file_path}: {str(e)}"
-            )
+            error_messages.append(f"pypdf fallback failed: {str(e)}")
+            app.logger.error(f"❌ pypdf fallback failed: {str(e)}")
 
-        # Count characters in the text content
-        char_count = len(text_content)
-        app.logger.info(f"📝 Character count: {char_count}")
+    # If all methods failed
+    if text_content is None:
+        raise Exception(f"All document processing methods failed:\n" + "\n".join(error_messages))
 
-        # get the following metadata of the text content:
-        # 1) title (use original filename strip off extension)
-        # 2) char count (use len(text_content))
-        # 3) date of upload (use current time)
-
-        meta_title = os.path.splitext(os.path.basename(file_path))[0]
-        app.logger.info(f"📝 (Meta) title: {meta_title}")
-
-        meta_char_count = char_count
-        app.logger.info(f"📝 (Meta) character count: {meta_char_count}")
-
-        meta_date = str(os.path.getmtime(file_path))
-        app.logger.info(f"📝 (Meta) date of upload: {meta_date}")
-
-        # Return document metadata along with text content
-        document_metadata = {
-            "text_content": text_content,
-            "char_count": char_count,
-            "title": meta_title,
-            "date_of_upload": meta_date,
-        }
-
-        return document_metadata
-
+    # Save debug output
+    text_content_file_path = os.path.join(debug_dir, "text_content.txt")
+    try:
+        with open(text_content_file_path, "w", encoding="utf-8") as text_file:
+            text_file.write(text_content)
+        app.logger.info(f"✅ Text content saved to {text_content_file_path}")
     except Exception as e:
-        app.logger.error(f"❌ Error processing document: {str(e)}")
-        raise Exception(f"Failed to process document: {str(e)}")
+        app.logger.error(f"❌ Failed to save debug output: {str(e)}")
+
+    # Process metadata
+    char_count = len(text_content)
+    meta_title = os.path.splitext(os.path.basename(file_path))[0]
+    meta_title = meta_title.rsplit("_", 1)[0]  # Strip UUID
+
+    meta_date = str(os.path.getmtime(file_path))
+
+    # Log metadata
+    app.logger.info(f"📝 Title: {meta_title}")
+    app.logger.info(f"📝 Character count: {char_count}")
+    app.logger.info(f"📝 Upload date: {meta_date}")
+
+    return {
+        "text_content": text_content,
+        "char_count": char_count,
+        "title": meta_title,
+        "date_of_upload": meta_date,
+    }
+
+
+def _extract_text_with_pypdf(file_path):
+    """
+    Extract text from PDF using pypdf as a fallback method.
+
+    Args:
+        file_path (str): Path to the PDF file
+
+    Returns:
+        str: Extracted text content
+    """
+    try:
+        reader = PdfReader(file_path)
+        text_content = ""
+        for page in reader.pages:
+            text_content += page.extract_text() + "\n"
+        return text_content
+    except Exception as e:
+        app.logger.error(f"❌ pypdf extraction failed: {str(e)}")
+        raise

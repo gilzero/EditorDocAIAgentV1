@@ -30,6 +30,14 @@ app = Flask(__name__)
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config["CORS_RESOURCES"] = {r"/*": {"origins": "*"}}
 
+# app.py
+
+# Add these lines to configure allowed file extensions and uploads folder
+app.config["ALLOWED_EXTENSIONS"] = {"pdf", "docx"}
+app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+    os.makedirs(app.config["UPLOAD_FOLDER"])
+
 # Configure max upload size
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB max file size
 
