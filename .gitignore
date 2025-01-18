@@ -49,3 +49,7 @@ replit.nix
 tmp/
 temp/
 .DS_Store
+
+# uploads
+uploads/
+
