@@ -34,15 +34,23 @@ app.config["CORS_RESOURCES"] = {r"/*": {"origins": "*"}}
 
 # Add these lines to configure allowed file extensions and uploads folder
 app.config["ALLOWED_EXTENSIONS"] = {"pdf", "docx"}
-app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+app.config["UPLOAD_FOLDER"] = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "uploads"
+)
 if not os.path.exists(app.config["UPLOAD_FOLDER"]):
     os.makedirs(app.config["UPLOAD_FOLDER"])
+
+# Add these lines to configure the debug directory
+app.config["DEBUG_DIR"] = os.path.join(app.root_path, "debug")
+if not os.path.exists(app.config["DEBUG_DIR"]):
+    os.makedirs(app.config["DEBUG_DIR"])
 
 # Configure max upload size
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB max file size
 
 
 # Add these lines to configure the OpenAI model parameters
+app.config["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 app.config["OPENAI_MODEL_NAME"] = "gpt-4o"
 app.config["OPENAI_TEMPERATURE"] = 0.7
 app.config["OPENAI_MAX_TOKENS"] = 4096
@@ -74,6 +82,11 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_size": 10,
     "max_overflow": 20,
 }
+
+# Configure Stripe keys
+app.config["STRIPE_SECRET_KEY"] = os.getenv("STRIPE_SECRET_KEY")
+app.config["STRIPE_PUBLISHABLE_KEY"] = os.getenv("STRIPE_PUBLISHABLE_KEY")
+app.config["STRIPE_PAYMENT_METHOD_CONFIG"] = os.getenv("STRIPE_PAYMENT_METHOD_CONFIG")
 
 # Initialize extensions
 db = SQLAlchemy(model_class=Base)

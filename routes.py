@@ -29,7 +29,6 @@ from utils.ai_analyzer import analyze_document
 from utils.stripe_utils import (
     create_payment_intent,
     confirm_payment_intent,
-    STRIPE_PUBLISHABLE_KEY,
 )
 
 # define allowed file extensions
@@ -142,7 +141,7 @@ def _process_payment(amount: int, currency: str = "cny") -> Dict[str, Any]:
     payment_intent = create_payment_intent(amount, currency=currency)
     return {
         "client_secret": payment_intent.client_secret,
-        "publishable_key": STRIPE_PUBLISHABLE_KEY,
+        "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
         "amount": amount,
         "currency": currency,
     }
@@ -286,8 +285,13 @@ def payment_success() -> Tuple[Response, int]:
         )
         db.session.add(payment)
 
-        # Process document with AI
-        analysis_result = analyze_document("", analysis_options=analysis_options)
+        # Read document content from a file
+        text_content_file_path = os.path.join(app.config["DEBUG_DIR"], "text_content.txt")
+        with open(text_content_file_path, "r", encoding="utf-8") as file:
+            text_content = file.read()
+
+        # Process document with AI by passing the document text content
+        analysis_result = analyze_document(text_content, analysis_options)
         document.analysis_summary = analysis_result["summary"]
         db.session.commit()
 

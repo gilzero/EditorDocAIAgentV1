@@ -26,16 +26,16 @@ def process_document(file_path):
     """
 
     # Create debug directory if it doesn't exist
-    debug_dir = os.path.join(app.root_path, "debug")
-    if not os.path.exists(debug_dir):
-        os.makedirs(debug_dir)
+    debug_dir = app.config["DEBUG_DIR"]
 
     text_content = None
     error_messages = []
 
     # Try MarkItDown first
     try:
-        app.logger.info(f"🚀 Attempting to process document with MarkItDown: {file_path}")
+        app.logger.info(
+            f"🚀 Attempting to process document with MarkItDown: {file_path}"
+        )
         md = MarkItDown()
         result = md.convert(file_path)
         text_content = getattr(result, "text_content", "")
@@ -55,7 +55,9 @@ def process_document(file_path):
 
     # If all methods failed
     if text_content is None:
-        raise Exception(f"All document processing methods failed:\n" + "\n".join(error_messages))
+        raise Exception(
+            f"All document processing methods failed:\n" + "\n".join(error_messages)
+        )
 
     # Save debug output
     text_content_file_path = os.path.join(debug_dir, "text_content.txt")

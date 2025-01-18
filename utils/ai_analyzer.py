@@ -1,14 +1,12 @@
-import os
 from openai import OpenAI
 from app import app
-import dotenv
-
-dotenv.load_dotenv()
+import os
 
 
 # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
 # do not change this unless explicitly requested by the user
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
 
 
 # utils/ai_analyzer.py
@@ -75,8 +73,22 @@ def analyze_document(text_content, analysis_options=None):
             max_tokens=app.config["OPENAI_MAX_TOKENS"],
         )
 
+        # debug message content that was sent to OpenAI, by outputting the system prompt and user content
+        # to debug/ai_analyzer_request.txt
+        with open(
+            os.path.join(app.config["DEBUG_DIR"], "ai_analyzer_request.txt"), "w"
+        ) as f:
+            f.write(f"System Prompt:\n{system_prompt}\n\nUser Content:\n{text_content}")
+
         analysis = response.choices[0].message.content.strip()
         app.logger.info("📥 Received response from OpenAI")
+
+        # debug message content that was received from OpenAI, by outputting the analysis
+        # to debug/ai_analyzer_response.txt
+        with open(
+            os.path.join(app.config["DEBUG_DIR"], "ai_analyzer_response.txt"), "w"
+        ) as f:
+            f.write(analysis)
 
         # Clean up the analysis text
         # Remove any numbered prefixes and clean up formatting

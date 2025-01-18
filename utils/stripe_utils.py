@@ -1,5 +1,5 @@
 """
-@fileoverview This module provides utility functions for handling Stripe payment intents in the Dreamer Document AI project.
+@file-overview This module provides utility functions for handling Stripe payment intents in the Dreamer Document AI project.
 @filepath utils/stripe_utils.py
 """
 
@@ -7,8 +7,7 @@ import os
 import stripe
 from app import app
 
-stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+stripe.api_key = app.config["STRIPE_SECRET_KEY"]
 
 
 def create_payment_intent(amount, currency="cny"):
@@ -30,9 +29,7 @@ def create_payment_intent(amount, currency="cny"):
             amount=amount,
             currency=currency,
             automatic_payment_methods={"enabled": True},
-            payment_method_configuration=os.environ.get(
-                "STRIPE_PAYMENT_METHOD_CONFIG", "pmc_1QbcRB00zr9oQIWafBW2LMWF"
-            ),
+            payment_method_configuration=app.config["STRIPE_PAYMENT_METHOD_CONFIG"],
             metadata={"service": "document_analysis"},
         )
         return intent
