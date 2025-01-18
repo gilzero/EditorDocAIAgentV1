@@ -40,7 +40,8 @@ def analyze_document(text_content, analysis_options=None):
             ]
 
         # Build dynamic system prompt based on selected sections
-        system_prompt = """你是一位专业的文档分析专家。请用中文分析这篇文档，确保每个部分都提供详细的分析（至少2-3段）：
+        system_prompt = """
+                        你是一位专业的文档分析专家。请用中文分析这篇文档，确保每个部分都提供详细的分析（至少2-3段）：
                         
                             摘要：
                             [请用3-5句话简明扼要地总结文档的关键点和主要信息]

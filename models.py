@@ -15,6 +15,9 @@ class Document(db.Model):
     original_filename = db.Column(db.String(255), nullable=False)
     file_size = db.Column(db.Integer, nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(255), nullable=True)  # Document title extracted from metadata
+    char_count = db.Column(db.Integer, nullable=True)  # Character count for pricing
+    analysis_cost = db.Column(db.Integer, nullable=True)  # Analysis cost in cents
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 

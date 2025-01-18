@@ -659,3 +659,328 @@ body {
     border-radius: 2px;
     transition: width 0.3s ease;
 }
+
+.pricing-info {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pricing-info .table {
+    margin-bottom: 0;
+}
+
+.pricing-info .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.pricing-info .btn-link {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.pricing-info .btn-link:hover {
+    text-decoration: underline;
+}
+
+#documentInfo .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+#documentInfo .card-title {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+#documentInfo p {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+#documentInfo span {
+    font-weight: 500;
+}
+
+/* Document Metadata Styles */
+.metadata-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.metadata-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+    color: var(--primary-color);
+}
+
+.metadata-item div {
+    flex: 1;
+}
+
+.metadata-item label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.metadata-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+#documentInfo .card {
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#documentInfo .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#documentInfo .card-title {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metadata-item {
+        margin-bottom: 0.75rem;
+    }
+    
+    .metadata-item label {
+        font-size: 0.75rem;
+    }
+    
+    .metadata-item p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Pricing Table Styles */
+.pricing-table {
+    margin: 1.5rem 0;
+}
+
+.pricing-table h3 {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.pricing-note {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: var(--hover-bg);
+    border-radius: 4px;
+}
+
+.pricing-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.pricing-table th,
+.pricing-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pricing-table th {
+    background-color: var(--card-bg);
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.pricing-table tr:hover {
+    background-color: var(--hover-bg);
+}
+
+.pricing-footnote {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+/* Document Metadata Styles */
+#documentMetadata {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+#documentMetadata:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metadata-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+.metadata-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    transition: background-color 0.2s ease;
+}
+
+.metadata-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.metadata-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+    color: var(--primary-color);
+}
+
+.metadata-item div {
+    flex: 1;
+}
+
+.metadata-item label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.metadata-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metadata-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .metadata-item {
+        padding: 0.5rem;
+    }
+}
+
+/* Document Info Section */
+#documentInfo {
+    margin-bottom: 2rem;
+}
+
+#documentInfo .alert {
+    margin-bottom: 1rem;
+}
+
+#documentMetadata {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+#documentMetadata:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#documentMetadata .card-title {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.metadata-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+.metadata-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    transition: background-color 0.2s ease;
+}
+
+.metadata-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.metadata-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+    color: var(--primary-color);
+}
+
+.metadata-item div {
+    flex: 1;
+}
+
+.metadata-item label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.metadata-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metadata-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .metadata-item {
+        padding: 0.5rem;
+    }
+}

@@ -6,7 +6,58 @@
         <div class="col-md-12 text-center mb-4">
             <h1>Document Analysis</h1>
             <p class="lead">Upload PDF or Word documents for AI-powered analysis</p>
-            <small class="text-muted">Analysis cost: ¥3 per document</small>
+            
+            <!-- Pricing Information -->
+            <div class="pricing-info mb-3">
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#pricingTable" 
+                        aria-expanded="false" aria-controls="pricingTable">
+                    View Pricing Details
+                </button>
+                <div class="collapse" id="pricingTable">
+                    <div class="card card-body">
+                        <h5>Analysis Pricing Tiers</h5>
+                        <div class="pricing-table">
+                            <h3>Analysis Pricing</h3>
+                            <p class="pricing-note">Note: Minimum charge of ¥3.50 applies to all documents</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Characters</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Up to 1,000</td>
+                                        <td>¥3.50*</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1,001 - 5,000</td>
+                                        <td>¥3.50*</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5,001 - 10,000</td>
+                                        <td>¥3.50*</td>
+                                    </tr>
+                                    <tr>
+                                        <td>10,001 - 50,000</td>
+                                        <td>¥5.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>50,001 - 100,000</td>
+                                        <td>¥8.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Over 100,000</td>
+                                        <td>¥10.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="pricing-footnote">* Minimum charge of ¥3.50 applies due to payment processing requirements</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -21,6 +72,72 @@
                     <small class="text-muted">Supported formats: PDF, DOCX (Max 20MB)</small>
                     <input type="file" id="fileInput" accept=".pdf,.docx" class="d-none" 
                            aria-label="Choose a file to upload">
+                </div>
+            </div>
+
+            <!-- Document Info -->
+            <div id="documentInfo" class="mb-4 d-none">
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i> Upload a document to begin analysis
+                </div>
+                
+                <div id="documentMetadata" class="card" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-file-alt"></i> Document Details
+                        </h5>
+                        <div class="metadata-content">
+                            <div class="metadata-item">
+                                <i class="fas fa-heading metadata-icon"></i>
+                                <div>
+                                    <label>Title</label>
+                                    <p id="docTitle">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-file-alt metadata-icon"></i>
+                                <div>
+                                    <label>Original Filename</label>
+                                    <p id="docFilename">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-text-width metadata-icon"></i>
+                                <div>
+                                    <label>Character Count</label>
+                                    <p id="docCharCount">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-weight-hanging metadata-icon"></i>
+                                <div>
+                                    <label>File Size</label>
+                                    <p id="docFileSize">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-file-code metadata-icon"></i>
+                                <div>
+                                    <label>File Type</label>
+                                    <p id="docMimeType">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-calendar-alt metadata-icon"></i>
+                                <div>
+                                    <label>Upload Date</label>
+                                    <p id="docUploadDate">-</p>
+                                </div>
+                            </div>
+                            <div class="metadata-item">
+                                <i class="fas fa-yen-sign metadata-icon"></i>
+                                <div>
+                                    <label>Analysis Cost</label>
+                                    <p id="docAnalysisCost">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -153,5 +270,50 @@
     let elements;
     let currentDocumentId;
     let clientSecret;
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function handleUploadResponse(response) {
+        const documentInfo = document.getElementById('documentInfo');
+        
+        // Update all metadata fields
+        document.getElementById('docTitle').textContent = response.title;
+        document.getElementById('docFilename').textContent = response.filename;
+        document.getElementById('docCharCount').textContent = response.char_count.toLocaleString();
+        document.getElementById('docFileSize').textContent = formatFileSize(response.file_size);
+        document.getElementById('docMimeType').textContent = response.mime_type;
+        document.getElementById('docUploadDate').textContent = response.upload_date;
+        document.getElementById('docAnalysisCost').textContent = `¥${(response.analysis_cost / 100).toFixed(2)}`;
+        
+        // Show the document info card
+        documentInfo.classList.remove('d-none');
+        document.getElementById('documentMetadata').style.display = 'block';
+        
+        // Refresh Feather icons
+        feather.replace();
+        
+        // Initialize payment
+        stripe = Stripe(response.publishable_key);
+        clientSecret = response.client_secret;
+        document_id = response.document_id;
+        
+        // Show success message with pricing
+        Toastify({
+            text: `Document uploaded successfully! Analysis cost: ¥${(response.analysis_cost / 100).toFixed(2)}`,
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "#28a745"
+        }).showToast();
+        
+        // Start payment process
+        handlePayment();
+    }
 </script>
 {% endblock %}

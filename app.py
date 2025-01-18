@@ -1,45 +1,39 @@
 """
-File Overview:
-This module sets up the Flask application and configures the SQLAlchemy database for the Dreamer Document AI project.
-
-File Path:
-app.py
+@fileoverview This module initializes the Flask application and its extensions.
+@filepath app.py
 """
 
 import os
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from sqlalchemy.orm import DeclarativeBase
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-
 class Base(DeclarativeBase):
-    """Base class for SQLAlchemy models."""
-
     pass
 
-
-# Initialize SQLAlchemy with a custom model base class
-db = SQLAlchemy(model_class=Base)
-
-# Create a Flask application instance
+# Initialize Flask app
 app = Flask(__name__)
 
 # Configure max upload size
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB max file size
 
-# Set production configuration
-app.config["ENV"] = "production"
-app.config["DEBUG"] = False
-
 # Use a strong secret key
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
-# Configure the database to use SQLite
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///dreamer_document_ai.db"
+# Configure database
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL", "sqlite:///dreamer_document_ai.db"
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -47,8 +41,10 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "max_overflow": 20,
 }
 
-# Initialize database
+# Initialize extensions
+db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Import routes after app initialization
 from routes import *  # noqa

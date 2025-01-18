@@ -186,6 +186,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateLoadingState('analyzeStep', 90);
                 setTimeout(() => {
                     progressContainer.classList.add('d-none');
+                    
+                    // Update metadata display
+                    updateDocumentMetadata(data);
+                    
                     setupStripePayment(data);
                     showToast('Document uploaded successfully', 'success');
                 }, 1000);
@@ -196,6 +200,51 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(error.message || 'Error processing document');
             progressContainer.classList.add('d-none');
         });
+    }
+
+    function updateDocumentMetadata(data) {
+        // Show document info section
+        const documentInfo = document.getElementById('documentInfo');
+        if (documentInfo) {
+            documentInfo.classList.remove('d-none');
+        }
+
+        // Show metadata card
+        const metadataCard = document.getElementById('documentMetadata');
+        if (metadataCard) {
+            metadataCard.style.display = 'block';
+        }
+
+        // Update all metadata fields
+        const formatFileSize = (bytes) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+
+        // Update each metadata field if the element exists
+        const updateField = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        };
+
+        updateField('docTitle', data.title || 'Untitled');
+        updateField('docFilename', data.original_filename || '');
+        updateField('docCharCount', (data.char_count || 0).toLocaleString());
+        updateField('docFileSize', formatFileSize(data.file_size || 0));
+        updateField('docMimeType', data.mime_type || '');
+        updateField('docUploadDate', data.upload_date || '');
+        updateField('docAnalysisCost', `¥${((data.analysis_cost || 0) / 100).toFixed(2)}`);
+
+        // Hide the initial info alert if it exists
+        const infoAlert = documentInfo.querySelector('.alert-info');
+        if (infoAlert) {
+            infoAlert.style.display = 'none';
+        }
     }
 
     function setupStripePayment(data) {
