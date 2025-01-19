@@ -25,6 +25,7 @@ class Base(DeclarativeBase):
 # Initialize Flask app
 app = Flask(__name__)
 
+app.config['JSON_AS_ASCII'] = False
 
 # CORS Configuration
 app.config["CORS_HEADERS"] = "Content-Type"
