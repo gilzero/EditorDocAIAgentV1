@@ -50,9 +50,16 @@ tmp/
 temp/
 .DS_Store
 
-# uploads
-uploads/
+# uploads's docx and pdf files
+uploads/*.docx
+uploads/*.pdf
 
-# ignore instance folder
-instance/
+# instance folder's content
+instance/*.db
+
+# debug directory's content
+debug/*.txt
+
+# migrations
+/migrations/
 
