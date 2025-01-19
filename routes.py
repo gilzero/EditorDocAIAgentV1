@@ -161,8 +161,9 @@ def upload_file() -> Tuple[Response, int]:
     Returns:
         Tuple[Response, int]: JSON response and HTTP status code
     """
+    save_path = None
     try:
-        # Validate file presence
+        # 1. File validation
         if "file" not in request.files:
             app.logger.error("🚫 No file part in the request")
             return jsonify({"error": "No file provided"}), 400
@@ -174,80 +175,77 @@ def upload_file() -> Tuple[Response, int]:
 
         if not _allowed_file(file.filename):
             app.logger.error(f"🚫 Invalid file type: {file.filename}")
-            return (
-                jsonify(
-                    {"error": "Invalid file type. Only PDF and DOCX files are allowed"}
-                ),
-                400,
-            )
+            return jsonify({"error": "Invalid file type. Only PDF and DOCX files are allowed"}), 400
 
-        # Generate unique filename and save file
-        unique_filename, _ = _generate_unique_filename(file.filename)
-        save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
-        _save_uploaded_file(file, save_path)
-
-        # Process document and get metadata
-        document_metadata = process_document(save_path)
-        char_count = document_metadata["char_count"]
-        text_content_file_path = document_metadata["text_content_file_path"]
-
-        # Calculate cost based on character count
-        analysis_cost = _calculate_analysis_cost(char_count)
-        app.logger.info(
-            f"💰 Calculated analysis cost: ¥{analysis_cost/100:.2f} for {char_count} characters"
-        )
-
-        # Format the upload date
+        # 2. Save file with cleanup on failure
         try:
-            upload_timestamp = float(document_metadata["date_of_upload"])
-            upload_date = datetime.fromtimestamp(upload_timestamp)
-            formatted_date = upload_date.strftime("%Y-%m-%d %H:%M:%S")
-        except (ValueError, TypeError) as e:
-            app.logger.warning(
-                f"⚠️ Failed to parse upload date: {e}. Using current time."
+            unique_filename, _ = _generate_unique_filename(file.filename)
+            save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+            _save_uploaded_file(file, save_path)
+        except OSError as e:
+            app.logger.error(f"⚠️ File save error: {str(e)}")
+            return jsonify({"error": "Failed to save file"}), 500
+
+        # 3. Process document and calculate cost
+        try:
+            document_metadata = process_document(save_path)
+            char_count = document_metadata["char_count"]
+            analysis_cost = _calculate_analysis_cost(char_count)
+            app.logger.info(f"💰 Analysis cost: ¥{analysis_cost / 100:.2f} for {char_count} characters")
+        except Exception as e:
+            if save_path and os.path.exists(save_path):
+                os.remove(save_path)
+            app.logger.error(f"⚠️ Processing error: {str(e)}")
+            return jsonify({"error": "Document processing failed"}), 500
+
+        # 4. Database entry
+        try:
+            document = Document(
+                filename=unique_filename,
+                original_filename=file.filename,
+                file_size=os.path.getsize(save_path),
+                mime_type=file.content_type,
+                char_count=char_count,
+                analysis_cost=analysis_cost,
+                title=document_metadata["title"],
+                text_content_file_path=document_metadata["text_content_file_path"]
             )
-            formatted_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            db.session.add(document)
+            db.session.commit()
+        except Exception as e:
+            if save_path and os.path.exists(save_path):
+                os.remove(save_path)
+            app.logger.error(f"⚠️ Database error: {str(e)}")
+            return jsonify({"error": "Failed to save document info"}), 500
 
-        # Create database entry
-        document = Document(
-            filename=unique_filename,
-            original_filename=file.filename,
-            file_size=os.path.getsize(save_path),
-            mime_type=file.content_type,
-            char_count=char_count,
-            analysis_cost=analysis_cost,
-            title=document_metadata["title"],
-            text_content_file_path=text_content_file_path,
-        )
-        db.session.add(document)
-        db.session.commit()
+        # 5. Create payment intent and return response
+        try:
+            payment_data = _process_payment(analysis_cost)
+            # Use current date if metadata date fails (fallback logic)
+            upload_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Create payment intent
-        payment_data = _process_payment(analysis_cost)
+            return jsonify({
+                "document_id": document.id,
+                "title": document_metadata["title"],
+                "original_filename": file.filename,
+                "char_count": char_count,
+                "file_size": os.path.getsize(save_path),
+                "mime_type": file.content_type,
+                "upload_date": upload_date,
+                "analysis_cost": analysis_cost,
+                "text_content_file_path": document_metadata["text_content_file_path"],
+                **payment_data
+            }), 200
 
-        # Return comprehensive document information
-        return (
-            jsonify(
-                {
-                    "document_id": document.id,
-                    "title": document_metadata["title"],
-                    "original_filename": file.filename,
-                    "char_count": char_count,
-                    "file_size": os.path.getsize(save_path),
-                    "mime_type": file.content_type,
-                    "upload_date": formatted_date,
-                    "analysis_cost": analysis_cost,
-                    "text_content_file_path": text_content_file_path,
-                    **payment_data,
-                }
-            ),
-            200,
-        )
+        except Exception as e:
+            if save_path and os.path.exists(save_path):
+                os.remove(save_path)
+            app.logger.error(f"⚠️ Payment error: {str(e)}")
+            return jsonify({"error": "Payment setup failed"}), 500
 
-    except OSError as e:
-        app.logger.error(f"⚠️ File operation error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
     except Exception as e:
+        if save_path and os.path.exists(save_path):
+            os.remove(save_path)
         app.logger.error(f"❌ Unexpected error: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
 
