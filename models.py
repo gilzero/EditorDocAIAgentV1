@@ -21,6 +21,7 @@ class Document(db.Model):
     char_count = db.Column(db.Integer, nullable=True)  # Character count for pricing
     analysis_cost = db.Column(db.Integer, nullable=True)  # Analysis cost in cents
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    text_content_file_path = db.Column(db.String(255), nullable=False)
 
 
 class Payment(db.Model):

@@ -1,1 +1,0 @@
-<markitdown._markitdown.DocumentConverterResult object at 0x1140b1a90>

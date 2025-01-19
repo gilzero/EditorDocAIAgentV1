@@ -9,6 +9,7 @@ from app import app
 import os
 from pdfminer.psexceptions import PSSyntaxError
 from pypdf import PdfReader
+import uuid
 
 
 def process_document(file_path):
@@ -59,8 +60,9 @@ def process_document(file_path):
             f"All document processing methods failed:\n" + "\n".join(error_messages)
         )
 
-    # Save debug output
-    text_content_file_path = os.path.join(debug_dir, "text_content.txt")
+    # Save debug output with a unique filename
+    unique_filename = f"text_content_{uuid.uuid4().hex}.txt"
+    text_content_file_path = os.path.join(debug_dir, unique_filename)
     try:
         with open(text_content_file_path, "w", encoding="utf-8") as text_file:
             text_file.write(text_content)
@@ -85,6 +87,7 @@ def process_document(file_path):
         "char_count": char_count,
         "title": meta_title,
         "date_of_upload": meta_date,
+        "text_content_file_path": text_content_file_path,  # Add this line to return the file path
     }
 
 

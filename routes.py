@@ -189,6 +189,7 @@ def upload_file() -> Tuple[Response, int]:
         # Process document and get metadata
         document_metadata = process_document(save_path)
         char_count = document_metadata["char_count"]
+        text_content_file_path = document_metadata["text_content_file_path"]
 
         # Calculate cost based on character count
         analysis_cost = _calculate_analysis_cost(char_count)
@@ -216,6 +217,7 @@ def upload_file() -> Tuple[Response, int]:
             char_count=char_count,
             analysis_cost=analysis_cost,
             title=document_metadata["title"],
+            text_content_file_path=text_content_file_path,
         )
         db.session.add(document)
         db.session.commit()
@@ -235,6 +237,7 @@ def upload_file() -> Tuple[Response, int]:
                     "mime_type": file.content_type,
                     "upload_date": formatted_date,
                     "analysis_cost": analysis_cost,
+                    "text_content_file_path": text_content_file_path,
                     **payment_data,
                 }
             ),
@@ -285,10 +288,8 @@ def payment_success() -> Tuple[Response, int]:
         )
         db.session.add(payment)
 
-        # Read document content from a file
-        text_content_file_path = os.path.join(
-            app.config["DEBUG_DIR"], "text_content.txt"
-        )
+        # Read document content from the unique file
+        text_content_file_path = document.text_content_file_path
         with open(text_content_file_path, "r", encoding="utf-8") as file:
             text_content = file.read()
 
